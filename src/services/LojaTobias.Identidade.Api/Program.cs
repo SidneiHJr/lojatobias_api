@@ -1,25 +1,33 @@
+using LojaTobias.Identidade.Api.Configuration;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+builder.Configuration.SetBasePath(builder.Environment.ContentRootPath)
+                .AddJsonFile("appsettings.json", true, true)
+                .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", true, true);
 
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+ConfigureServices(builder.Services, builder.Configuration);
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-
-app.UseHttpsRedirection();
-
-app.UseAuthorization();
-
-app.MapControllers();
+Configure(app);
 
 app.Run();
+
+
+void ConfigureServices(IServiceCollection services, IConfiguration configuration)
+{
+    services.AddEndpointsApiExplorer();
+    services.AddDependencyConfig();
+    services.AddSwaggerConfig();
+    services.AddIdentityConfig(configuration);
+    services.AddApiConfig(configuration);
+}
+
+void Configure(WebApplication app)
+{
+    app.UseSwaggerConfig();
+
+    app.UseApiConfig();
+
+}

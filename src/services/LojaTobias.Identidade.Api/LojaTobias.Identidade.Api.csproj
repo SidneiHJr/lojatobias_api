@@ -12,7 +12,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
+    <ProjectReference Include="..\..\building blocks\LojaTobias.Api.Core\LojaTobias.Api.Core.csproj" />
+    <ProjectReference Include="..\..\building blocks\LojaTobias.Domain\LojaTobias.Domain.csproj" />
+    <ProjectReference Include="..\..\building blocks\LojaTobias.Infra\LojaTobias.Infra.csproj" />
   </ItemGroup>
 
 </Project>
