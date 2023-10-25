@@ -9,16 +9,20 @@
 
         public Guid Id { get; set; }
         public DateTime? DataCriacao { get; set; }
+        public string? UsuarioCriacao { get; set; }
         public DateTime? DataAtualizacao { get; set; }
+        public string? UsuarioAtualizacao { get; set; }
 
-        public void NovaInsercao()
+        public void NovaInsercao(string usuarioId)
         {
             DataCriacao = DateTime.Now;
+            UsuarioCriacao = usuarioId;
         }
 
-        public void NovaAtualizacao()
+        public void NovaAtualizacao(string usuarioId)
         {
             DataAtualizacao = DateTime.Now;
+            UsuarioAtualizacao = usuarioId;
         }
 
         public override int GetHashCode()

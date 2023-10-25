@@ -9,12 +9,14 @@ namespace LojaTobias.Domain.Services
         protected readonly IRepository<TEntity> _repository;
         protected readonly INotifiable _notifiable;
         protected readonly IUnitOfWork _unitOfWork;
+        protected readonly IAspnetUser _aspnetUser;
 
-        public Service(IRepository<TEntity> repository, INotifiable notifiable, IUnitOfWork unitOfWork)
+        public Service(IRepository<TEntity> repository, INotifiable notifiable, IUnitOfWork unitOfWork, IAspnetUser aspnetUser)
         {
             _repository = repository;
             _notifiable = notifiable;
             _unitOfWork = unitOfWork;
+            _aspnetUser = aspnetUser;
         }
 
         public virtual async Task<IEnumerable<TEntity>> GetAsync()
@@ -34,13 +36,16 @@ namespace LojaTobias.Domain.Services
             if (_notifiable.HasNotification)
                 return Guid.Empty;
 
-            entity.NovaInsercao();
+            entity.NovaInsercao(string.IsNullOrEmpty(entity.UsuarioCriacao) ? _aspnetUser.GetUserId() : entity.UsuarioCriacao);
 
             await _repository.InsertAsync(entity);
             var sucesso = await _unitOfWork.CommitAsync();
 
-            if(!sucesso)
+            if (!sucesso)
+            {
+                _notifiable.AddNotification("Inserir", "Erro ao inserir o registro");
                 return Guid.Empty;
+            }
 
             return entity.Id;
         }
@@ -61,7 +66,7 @@ namespace LojaTobias.Domain.Services
             else
                 return;
 
-            entityDb.NovaAtualizacao();
+            entityDb.NovaAtualizacao(_aspnetUser.GetUserId());
 
             _repository.Update(entityDb);
             await _unitOfWork.CommitAsync();
@@ -76,7 +81,7 @@ namespace LojaTobias.Domain.Services
             if (method != null)
             {
                 method.Invoke(entityDb, null);
-                entityDb.NovaAtualizacao();
+                entityDb.NovaAtualizacao(_aspnetUser.GetUserId());
 
                 _repository.Update(entityDb);
             }
