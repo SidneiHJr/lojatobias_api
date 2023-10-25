@@ -11,4 +11,8 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.13" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\LojaTobias.Core\LojaTobias.Core.csproj" />
+  </ItemGroup>
+
 </Project>
