@@ -1,9 +1,10 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using LojaTobias.Infra.Extensions;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace LojaTobias.Infra.Data
 {
-    public class Context : IdentityDbContext
+    public class Context : IdentityDbContext<AspnetUserExtension>
     {
         protected Context()
         {
@@ -12,8 +13,7 @@ namespace LojaTobias.Infra.Data
 
         public Context(DbContextOptions<Context> options) : base(options)
         {
-            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
-            AppContext.SetSwitch("Npgsql.DisableDateTimeInfinityConversions", true);
+
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

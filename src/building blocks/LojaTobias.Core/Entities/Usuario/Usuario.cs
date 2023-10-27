@@ -25,6 +25,16 @@ namespace LojaTobias.Core.Entities
         public bool Ativo { get; private set; }
         public bool Removido { get; private set; }
 
+        public IEnumerable<string> Validar()
+        {
+            var erros = new List<string>();
+
+            if (!Email.EmailValido())
+                erros.Add("Email inválido.");
+
+            return erros;
+        }
+
         public void Remover()
         {
             Removido = true;

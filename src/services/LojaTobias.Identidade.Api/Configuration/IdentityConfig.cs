@@ -1,6 +1,7 @@
 ﻿using Ace.Api.Core.Extensions;
 using LojaTobias.Api.Core.Extensions;
 using LojaTobias.Infra.Data;
+using LojaTobias.Infra.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
@@ -13,7 +14,7 @@ namespace LojaTobias.Identidade.Api.Configuration
         public static IServiceCollection AddIdentityConfig(this IServiceCollection services, IConfiguration configuration)
         {
 
-            services.AddIdentity<IdentityUser, IdentityRole>()
+            services.AddIdentity<AspnetUserExtension, IdentityRole>()
                 .AddErrorDescriber<IdentityMensagensPortugues>()
                 .AddEntityFrameworkStores<Context>()
                 .AddDefaultTokenProviders();
