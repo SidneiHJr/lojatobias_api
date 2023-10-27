@@ -13,7 +13,7 @@ namespace LojaTobias.Identidade.Api.Configuration
     {
         public static void AddApiConfig(this IServiceCollection services, IConfiguration configuration)
         {
-            //Configuração para suspender o response de BadRequest do ModelState.
+            //Configuração para suspender o response de BadRequest do ModelState e permitir o retorno no formato CustomResponse.
             services.Configure<ApiBehaviorOptions>(options =>
             {
                 options.SuppressModelStateInvalidFilter = true;

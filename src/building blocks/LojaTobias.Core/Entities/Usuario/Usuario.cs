@@ -1,4 +1,5 @@
 ﻿using LojaTobias.Core.ValueObjects;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace LojaTobias.Core.Entities
 {
@@ -9,8 +10,9 @@ namespace LojaTobias.Core.Entities
 
         }
 
-        public Usuario(string nome, string email)
+        public Usuario(Guid id, string nome, string email)
         {
+            Id = id;
             Nome = nome;
             Email = new Email(email);
             Ativo = true;

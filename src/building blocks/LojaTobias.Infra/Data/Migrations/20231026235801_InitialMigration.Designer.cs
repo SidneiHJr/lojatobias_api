@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LojaTobias.Infra.Data.Migrations
 {
     [DbContext(typeof(Context))]
-    [Migration("20231024234255_AddInitialMigration")]
-    partial class AddInitialMigration
+    [Migration("20231026235801_InitialMigration")]
+    partial class InitialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

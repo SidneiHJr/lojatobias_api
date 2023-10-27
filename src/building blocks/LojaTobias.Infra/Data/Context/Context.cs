@@ -12,16 +12,16 @@ namespace LojaTobias.Infra.Data
 
         public Context(DbContextOptions<Context> options) : base(options)
         {
-
+            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+            AppContext.SetSwitch("Npgsql.DisableDateTimeInfinityConversions", true);
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            //Usado para configurar as tabelas do identity do tipo string para varchar(1000) em vez da padrao
             foreach (var property in modelBuilder.Model.GetEntityTypes().SelectMany(
                 e => e.GetProperties().Where(p => p.ClrType == typeof(string))))
                 property.SetColumnType("varchar(1000)");
-
-            //modelBuilder.Properties<string>(c => c.HasColumnType("varchar(1000)"));
 
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(Context).Assembly);
 

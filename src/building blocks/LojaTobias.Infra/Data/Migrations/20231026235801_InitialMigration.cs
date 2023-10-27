@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace LojaTobias.Infra.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class AddInitialMigration : Migration
+    public partial class InitialMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
