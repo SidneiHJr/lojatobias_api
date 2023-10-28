@@ -13,12 +13,13 @@ namespace LojaTobias.Domain.Services
         {
         }
 
-        public async Task InserirAsync(Guid id, string nome, string email)
+        public async Task InserirAsync(Guid id, string nome, string email, string perfil)
         {
-            var usuario = new Usuario(id, nome, email);
+            var usuario = new Usuario(id, nome, email, perfil);
 
            await InsertAsync(usuario);
 
         }
+
     }
 }

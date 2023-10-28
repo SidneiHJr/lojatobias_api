@@ -1,12 +1,10 @@
-﻿
-using AutoMapper;
-using LojaTobias.Api.Core.Controllers;
+﻿using LojaTobias.Api.Core.Controllers;
 using LojaTobias.Api.Core.Extensions;
 using LojaTobias.Api.Core.Models;
-using LojaTobias.Core.Entities;
 using LojaTobias.Core.Enums;
 using LojaTobias.Core.Interfaces;
 using LojaTobias.Infra.Extensions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -21,7 +19,6 @@ namespace LojaTobias.Identidade.Api.Controllers
     public class AuthController : MainController
     {
         private readonly AppSettings _appSettings;
-        private readonly ILogger _logger;
         private readonly IUsuarioService _usuarioService;
         private readonly UserManager<AspnetUserExtension> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
@@ -30,14 +27,12 @@ namespace LojaTobias.Identidade.Api.Controllers
         public AuthController(
             INotifiable notifiable,
             IOptions<AppSettings> appSettings,
-            ILogger<AuthController> logger,
             IUsuarioService usuarioService,
             UserManager<AspnetUserExtension> userManager,
             RoleManager<IdentityRole> roleManager,
             SignInManager<AspnetUserExtension> signInManager) : base(notifiable)
         {
             _appSettings = appSettings.Value;
-            _logger = logger;
             _userManager = userManager;
             _usuarioService = usuarioService;
             _roleManager = roleManager;
@@ -47,6 +42,7 @@ namespace LojaTobias.Identidade.Api.Controllers
         [HttpPost("login")]
         [Produces("application/json")]
         [ProducesResponseType(typeof(UsuarioLoginResponseModel), 200)]
+        [ProducesResponseType(typeof(UnauthorizedModel), 401)]
         [ProducesResponseType(typeof(BadRequestModel), 400)]
         [ProducesResponseType(typeof(InternalServerErrorModel), 500)]
         public async Task<IActionResult> Login(LoginModel model)
@@ -57,143 +53,80 @@ namespace LojaTobias.Identidade.Api.Controllers
 
             if (user != null && !user.Active)
             {
-                return Ok(new
-                {
-                    Authenticated = false,
-                    Message = "Falha ao autenticar, usuário inativo"
-                });
+                _notifiable.AddNotification("Falha ao autenticar, usuário inativo");
+
+                return UnauthorizedResponse();
             }
 
-            var resultado = await _signInManager.PasswordSignInAsync(user.UserName, model.Senha, false, true);
-
-            if (resultado.Succeeded)
+            if (user != null)
             {
-                var tokenResponse = await GerarJwt(user.UserName);
-                return Ok(tokenResponse);
-            }
-
-            return Ok(new
-            {
-                Authenticated = false,
-                Message = "Falha ao autenticar, credenciais inválidas"
-            });
-
-            return CustomResponse();
-        }
-
-        [HttpPost("cadastro-admin")]
-        [Produces("application/json")]
-        [ProducesResponseType(typeof(OkModel), 200)]
-        [ProducesResponseType(typeof(BadRequestModel), 400)]
-        [ProducesResponseType(typeof(InternalServerErrorModel), 500)]
-        public async Task<IActionResult> RegistroAdmin([FromBody] UsuarioRegistroModel model)
-        {
-            try
-            {
-                if (!ModelState.IsValid) return CustomResponse(ModelState);
-
-                var identityUser = new AspnetUserExtension(model.Email, model.Nome);
-                identityUser.Email = model.Email;
-                identityUser.NormalizedEmail = model.Email.ToUpper();
-
-                var resultado = await _userManager.CreateAsync(identityUser, model.Senha);
-
-                if(resultado.Succeeded)
-                {
-                    await _usuarioService.InserirAsync(Guid.Parse(identityUser.Id), model.Nome, model.Email);
-
-                    if(!_notifiable.HasNotification)
-                    {
-                        await CreateRoles();
-
-                        resultado = await _userManager.AddToRoleAsync(identityUser, PerfilUsuarioEnum.Admin.ToString());
-
-                        if (resultado.Succeeded)
-                        {
-                            return CustomResponse();
-                        }
-
-                    }
-
-                    await _userManager.DeleteAsync(identityUser);
-
-                }
-                else
-                {
-                    foreach (var error in resultado.Errors)
-                    {
-                        _notifiable.AddNotification("Erro no registro", error.Description);
-                    }
-                }
-
-                return CustomResponse();
-
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Erro: {ex.Message}", ex);
-                return InternalServerError($"Erro: {ex.Message}");
-            }
-        }
-
-        [HttpPost("cadastro-colaborador")]
-        [Produces("application/json")]
-        [ProducesResponseType(typeof(OkModel), 200)]
-        [ProducesResponseType(typeof(BadRequestModel), 400)]
-        [ProducesResponseType(typeof(InternalServerErrorModel), 500)]
-        public async Task<IActionResult> RegistroColaborador([FromBody] UsuarioRegistroModel model)
-        {
-            try
-            {
-                if (!ModelState.IsValid) return CustomResponse(ModelState);
-
-                var identityUser = new AspnetUserExtension(model.Email, model.Nome);
-                identityUser.Email = model.Email;
-                identityUser.NormalizedEmail = model.Email.ToUpper();
-
-                var resultado = await _userManager.CreateAsync(identityUser, model.Senha);
+                var resultado = await _signInManager.PasswordSignInAsync(user.UserName, model.Senha, false, true);
 
                 if (resultado.Succeeded)
                 {
-                    await _usuarioService.InserirAsync(Guid.Parse(identityUser.Id), model.Nome, model.Email);
-
-                    if (!_notifiable.HasNotification)
-                    {
-                        await CreateRoles();
-
-                        resultado = await _userManager.AddToRoleAsync(identityUser, PerfilUsuarioEnum.Colaborador.ToString());
-
-                        if (resultado.Succeeded)
-                        {
-                            return CustomResponse();
-                        }
-
-                    }
-
-                    await _userManager.DeleteAsync(identityUser);
+                    var tokenResponse = await GerarJwt(user.UserName);
+                    return Ok(tokenResponse);
                 }
-                else
-                {
-                    foreach (var error in resultado.Errors)
-                    {
-                        _notifiable.AddNotification("Erro no registro", error.Description);
-                    }
-                }
-
-                return CustomResponse();
-
             }
-            catch (Exception ex)
+
+            _notifiable.AddNotification("Falha ao autenticar, credenciais inválidas");
+
+            return UnauthorizedResponse();           
+
+        }
+
+        [HttpPost("cadastro")]
+        [Produces("application/json")]
+        [ProducesResponseType(typeof(OkModel), 200)]
+        [ProducesResponseType(typeof(BadRequestModel), 400)]
+        [ProducesResponseType(typeof(InternalServerErrorModel), 500)]
+        [Authorize(Roles = "Administrador")]
+        public async Task<IActionResult> Registro([FromBody] UsuarioRegistroModel model)
+        {
+            if (!ModelState.IsValid) return CustomResponse(ModelState);
+
+            var identityUser = new AspnetUserExtension(model.Email, model.Nome);
+            identityUser.Email = model.Email;
+            identityUser.NormalizedEmail = model.Email.ToUpper();
+
+            var resultado = await _userManager.CreateAsync(identityUser, model.Senha);
+
+            if (resultado.Succeeded)
             {
-                _logger.LogError($"Erro: {ex.Message}", ex);
-                return InternalServerError($"Erro: {ex.Message}");
+                await _usuarioService.InserirAsync(Guid.Parse(identityUser.Id), model.Nome, model.Email, model.Perfil);
+
+                if (!_notifiable.HasNotification)
+                {
+                    await CreateRoles();
+
+                    resultado = await _userManager.AddToRoleAsync(identityUser, model.Perfil);
+
+                    if (resultado.Succeeded)
+                    {
+                        return CustomResponse();
+                    }
+
+                }
+
+                await _userManager.DeleteAsync(identityUser);
+
             }
+            else
+            {
+                foreach (var error in resultado.Errors)
+                {
+                    _notifiable.AddNotification("Erro no registro", error.Description);
+                }
+            }
+
+            return CustomResponse();
+
         }
 
         private async Task CreateRoles()
         {
             string[] rolesNames = {
-                PerfilUsuarioEnum.Admin.ToString(),
+                PerfilUsuarioEnum.Administrador.ToString(),
                 PerfilUsuarioEnum.Colaborador.ToString()
             };
 

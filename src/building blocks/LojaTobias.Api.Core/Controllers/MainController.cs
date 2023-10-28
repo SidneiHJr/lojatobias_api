@@ -29,6 +29,12 @@ namespace LojaTobias.Api.Core.Controllers
             return BadRequest(new BadRequestModel(_notifiable.GetNotifications.ToArray()));
         }
 
+        protected ActionResult UnauthorizedResponse(object result = null)
+        {
+
+            return Unauthorized(new UnauthorizedModel(_notifiable.GetNotifications.ToArray()));
+        }
+
         protected ActionResult CustomResponse(ModelStateDictionary modelState)
         {
             var erros = modelState.Values.SelectMany(e => e.Errors);

@@ -1,4 +1,5 @@
-﻿using LojaTobias.Infra.Data;
+﻿using LojaTobias.Api.Core;
+using LojaTobias.Infra.Data;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
@@ -60,6 +61,9 @@ namespace LojaTobias.Identidade.Api.Configuration
             });
 
             services.AddSwaggerGen();
+
+            services.AddEndpointsApiExplorer();
+
         }
 
         public static void UseApiConfig(this WebApplication app)
@@ -85,6 +89,8 @@ namespace LojaTobias.Identidade.Api.Configuration
                 SupportedCultures = supportedCultures,
                 SupportedUICultures = supportedCultures
             });
+
+            app.UseMiddleware<ErrorHandlerMiddleware>();
 
             app.MapControllers();
         }

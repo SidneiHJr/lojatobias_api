@@ -1,5 +1,5 @@
-﻿using LojaTobias.Core.ValueObjects;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+﻿using LojaTobias.Core.Enums;
+using LojaTobias.Core.ValueObjects;
 
 namespace LojaTobias.Core.Entities
 {
@@ -10,10 +10,11 @@ namespace LojaTobias.Core.Entities
 
         }
 
-        public Usuario(Guid id, string nome, string email)
+        public Usuario(Guid id, string nome, string email, string perfil)
         {
             Id = id;
             Nome = nome;
+            Perfil = perfil;
             Email = new Email(email);
             Ativo = true;
             Removido = false;
@@ -22,6 +23,7 @@ namespace LojaTobias.Core.Entities
 
         public string Nome { get; private set; }
         public Email Email { get; private set; }
+        public string Perfil { get; private set; }
         public bool Ativo { get; private set; }
         public bool Removido { get; private set; }
 
@@ -32,7 +34,17 @@ namespace LojaTobias.Core.Entities
             if (!Email.EmailValido())
                 erros.Add("Email inválido.");
 
+            if (Perfil != PerfilUsuarioEnum.Administrador.ToString() && Perfil != PerfilUsuarioEnum.Colaborador.ToString())
+                erros.Add("Perfil inválido. Deve ser Administrador ou Colaborador");
+
             return erros;
+        }
+
+        public void Atualizar(Usuario usuario)
+        {
+            Nome = usuario.Nome;
+            Email = usuario.Email;
+            Ativo = usuario.Ativo;
         }
 
         public void Remover()

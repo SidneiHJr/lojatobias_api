@@ -1,4 +1,5 @@
 ﻿using Microsoft.OpenApi.Models;
+using System.Reflection;
 
 namespace LojaTobias.Identidade.Api.Configuration
 {
@@ -42,6 +43,11 @@ namespace LojaTobias.Identidade.Api.Configuration
                 });
 
                 c.ResolveConflictingActions(apiDescriptions => apiDescriptions.First());
+
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                c.IncludeXmlComments(xmlPath);
+
             });
 
             return services;

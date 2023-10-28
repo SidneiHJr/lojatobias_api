@@ -17,7 +17,7 @@ app.Run();
 
 void ConfigureServices(IServiceCollection services, IConfiguration configuration)
 {
-    services.AddEndpointsApiExplorer();
+    services.AddAutoMapper(typeof(Program));
     services.AddDependencyConfig();
     services.AddSwaggerConfig();
     services.AddIdentityConfig(configuration);

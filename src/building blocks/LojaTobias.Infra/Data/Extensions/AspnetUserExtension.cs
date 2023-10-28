@@ -27,18 +27,14 @@ namespace LojaTobias.Infra.Extensions
         public string Name { get; private set; }
         public bool Active { get; private set; }
 
-        public void Atualizar(string name, bool active = true)
+        public void Atualizar(string name, string email, bool active = true)
         {
-            Active = active;
             Name = name;
-        }
-
-        public void AtualizarConvidado(string email)
-        {
             Email = email;
-            UserName = email;
             NormalizedEmail = email.ToUpper();
             NormalizedUserName = email.ToUpper();
+            Active = active;
         }
+
     }
 }

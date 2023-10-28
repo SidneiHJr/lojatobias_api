@@ -3,6 +3,7 @@ using LojaTobias.Core.Interfaces;
 using LojaTobias.Domain.Notifications;
 using LojaTobias.Domain.Services;
 using LojaTobias.Infra.Data;
+using LojaTobias.Infra.Services;
 
 namespace LojaTobias.Identidade.Api.Configuration
 {
@@ -14,6 +15,8 @@ namespace LojaTobias.Identidade.Api.Configuration
             services.AddScoped<IUsuarioService, UsuarioService>();
 
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+
+            services.AddScoped<ILogProvider, LogProvider>();
 
             services.AddScoped<INotifiable, Notifiable>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();

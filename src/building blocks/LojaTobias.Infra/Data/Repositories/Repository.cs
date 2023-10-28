@@ -32,7 +32,7 @@ namespace LojaTobias.Infra.Data
 
         public virtual void Update(TEntity entity)
         {
-            throw new NotImplementedException();
+            Table.Update(entity);
         }
 
         public virtual async Task DeleteAsync(Guid id)

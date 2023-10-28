@@ -4,6 +4,6 @@ namespace LojaTobias.Core.Interfaces
 {
     public interface IUsuarioService : IService<Usuario>
     {
-        Task InserirAsync(Guid id, string nome, string email);
+        Task InserirAsync(Guid id, string nome, string email, string perfil);
     }
 }
