@@ -34,9 +34,6 @@ namespace LojaTobias.Core.Entities
             if (!Email.EmailValido())
                 erros.Add("Email inválido.");
 
-            if (Perfil != PerfilUsuarioEnum.Administrador.ToString() && Perfil != PerfilUsuarioEnum.Colaborador.ToString())
-                erros.Add("Perfil inválido. Deve ser Administrador ou Colaborador");
-
             return erros;
         }
 

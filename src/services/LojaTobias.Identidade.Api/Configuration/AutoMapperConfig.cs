@@ -9,7 +9,8 @@ namespace LojaTobias.Identidade.Api.Configuration
         public UsuarioMapperConfig()
         {
             CreateMap<UsuarioModel, Usuario>();
-            CreateMap<Usuario, UsuarioResponseModel>();
+            CreateMap<Usuario, UsuarioResponseModel>()
+                .ForMember(p => p.Email, opt => opt.MapFrom(x => x.Email.Endereco));
         }
     }
 }

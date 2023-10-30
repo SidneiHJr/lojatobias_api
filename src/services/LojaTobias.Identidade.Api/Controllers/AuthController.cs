@@ -75,15 +75,27 @@ namespace LojaTobias.Identidade.Api.Controllers
 
         }
 
+
+        /// <summary>
+        /// Criação de usuário com perfil Administrador e Colaborador
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         [HttpPost("cadastro")]
         [Produces("application/json")]
         [ProducesResponseType(typeof(OkModel), 200)]
         [ProducesResponseType(typeof(BadRequestModel), 400)]
         [ProducesResponseType(typeof(InternalServerErrorModel), 500)]
         [Authorize(Roles = "Administrador")]
-        public async Task<IActionResult> Registro([FromBody] UsuarioRegistroModel model)
+        public async Task<IActionResult> Cadastro([FromBody] UsuarioRegistroModel model)
         {
             if (!ModelState.IsValid) return CustomResponse(ModelState);
+
+            if(model.Perfil != PerfilUsuarioEnum.Administrador.ToString() && model.Perfil != PerfilUsuarioEnum.Colaborador.ToString())
+            {
+                _notifiable.AddNotification("Perfil inválido. Deve ser Administrador ou Colaborador");
+                return CustomResponse();
+            }
 
             var identityUser = new AspnetUserExtension(model.Email, model.Nome);
             identityUser.Email = model.Email;
@@ -120,7 +132,6 @@ namespace LojaTobias.Identidade.Api.Controllers
             }
 
             return CustomResponse();
-
         }
 
         private async Task CreateRoles()
@@ -148,7 +159,7 @@ namespace LojaTobias.Identidade.Api.Controllers
             var identityClaims = await ObterClaimsUsuario(claims, identityUser);
             var encodedToken = CodificarToken(identityClaims);
 
-            return await ObterRespostaToken(encodedToken, identityUser, claims);
+            return ObterRespostaToken(encodedToken, identityUser, claims);
         }
 
         private async Task<ClaimsIdentity> ObterClaimsUsuario(ICollection<Claim> claims, AspnetUserExtension user)
@@ -190,7 +201,7 @@ namespace LojaTobias.Identidade.Api.Controllers
             return tokenHandler.WriteToken(token);
         }
 
-        private async Task<UsuarioLoginResponseModel> ObterRespostaToken(string encodedToken, AspnetUserExtension usuario, IEnumerable<Claim> claims)
+        private UsuarioLoginResponseModel ObterRespostaToken(string encodedToken, AspnetUserExtension usuario, IEnumerable<Claim> claims)
         {
             return new UsuarioLoginResponseModel
             {

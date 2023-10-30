@@ -33,6 +33,23 @@ namespace LojaTobias.Identidade.Api.Controllers
             _unitOfWork = unitOfWork;
         }
 
+        [HttpPost("filtro")]
+        [ProducesResponseType(typeof(IEnumerable<UsuarioResponseModel>), 200)]
+        [ProducesResponseType(typeof(BadRequestModel), 400)]
+        [ProducesResponseType(typeof(InternalServerErrorModel), 500)]
+        [Authorize(Roles = "Administrador")]
+        public async Task<IActionResult> Filtrar([FromBody] UsuarioFiltroModel filtro, [FromQuery] PaginacaoQueryStringModel paginacao)
+        {
+            var resultado = await _usuarioService.FiltrarAsync(filtro.Termo, filtro.ColunaOrdem, filtro.DirecaoOrdem);
+
+            var resultadoPaginado = PaginacaoListModel<Usuario>.Create(resultado, paginacao.NumeroPagina, paginacao.TamanhoPagina);
+
+            var resposta = _mapper.Map<IEnumerable<UsuarioResponseModel>>(resultadoPaginado);
+
+            return PagingResponse(resultadoPaginado.NumeroPagina, resultadoPaginado.Total, resultadoPaginado.TotalPaginas, resposta);
+        }
+
+
         [HttpPut("{id}")]
         [Produces("application/json")]
         [ProducesResponseType(typeof(OkModel), 200)]
