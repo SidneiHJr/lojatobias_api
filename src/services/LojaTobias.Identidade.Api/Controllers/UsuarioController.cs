@@ -58,7 +58,6 @@ namespace LojaTobias.Identidade.Api.Controllers
         [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Atualizar([FromRoute] Guid id, [FromBody] UsuarioModel model)
         {
-            //atualizar identity
             var identityUser = await _userManager.FindByIdAsync(id.ToString());
 
             if(identityUser == null)
@@ -76,7 +75,12 @@ namespace LojaTobias.Identidade.Api.Controllers
             if (resultado.Succeeded)
             {
                 await _usuarioService.UpdateAsync(id, _mapper.Map<Usuario>(model));
-                await _unitOfWork.CommitTransactionAsync();
+
+                if (!_notifiable.HasNotification)
+                {
+                    await _unitOfWork.CommitTransactionAsync();
+                    return CustomResponse();
+                }
             }
             else
             {
@@ -86,12 +90,67 @@ namespace LojaTobias.Identidade.Api.Controllers
                 }
             }
 
-            if (_notifiable.HasNotification)
-                await _unitOfWork.RollBackAsync();
+            await _unitOfWork.RollBackAsync();
 
             return CustomResponse();
-            //atualizar usuario
         }
 
+        [HttpDelete("{id}")]
+        [Produces("application/json")]
+        [ProducesResponseType(typeof(OkModel), 200)]
+        [ProducesResponseType(typeof(BadRequestModel), 400)]
+        [ProducesResponseType(typeof(InternalServerErrorModel), 500)]
+        [Authorize(Roles = "Administrador")]
+        public async Task<IActionResult> Remover([FromRoute] Guid id)
+        {
+            var usuario = await _usuarioService.GetAsync(id);
+
+            if(usuario == null)
+            {
+                _notifiable.AddNotification("Usuário para remoção não encontrado.");
+                return CustomResponse();
+            }
+
+            if (usuario.Removido)
+            {
+                _notifiable.AddNotification("Usuário já foi removido.");
+                return CustomResponse();
+            }
+
+
+            var identityUser = await _userManager.FindByIdAsync(id.ToString());
+
+            if (identityUser == null)
+            {
+                _notifiable.AddNotification("Falha ao buscar usuário para remoção.");
+                return CustomResponse();
+            }
+
+            _unitOfWork.BeginTransaction();
+
+            var resultado = await _userManager.DeleteAsync(identityUser);
+
+            if (resultado.Succeeded)
+            {
+                await _usuarioService.DeleteAsync(id);
+
+                if (!_notifiable.HasNotification)
+                {
+                    await _unitOfWork.CommitTransactionAsync();
+                    return CustomResponse();
+                }
+            }
+            else
+            {
+                foreach (var error in resultado.Errors)
+                {
+                    _notifiable.AddNotification("Erro no registro", error.Description);
+                }
+            }
+
+            await _unitOfWork.RollBackAsync();
+
+            return CustomResponse();
+        }
     }
 }
