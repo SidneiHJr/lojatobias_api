@@ -49,6 +49,17 @@ namespace LojaTobias.Identidade.Api.Controllers
             return PagingResponse(resultadoPaginado.NumeroPagina, resultadoPaginado.Total, resultadoPaginado.TotalPaginas, resposta);
         }
 
+        [HttpGet("{id}")]
+        [ProducesResponseType(typeof(IEnumerable<UsuarioResponseModel>), 200)]
+        [ProducesResponseType(typeof(BadRequestModel), 400)]
+        [ProducesResponseType(typeof(InternalServerErrorModel), 500)]
+        [Authorize(Roles = "Administrador")]
+        public async Task<IActionResult> Buscar([FromRoute] Guid id)
+        {
+            var usuario = _mapper.Map<UsuarioResponseModel>(await _usuarioService.GetAsync(id));
+
+            return CustomResponse(usuario);
+        }
 
         [HttpPut("{id}")]
         [Produces("application/json")]
