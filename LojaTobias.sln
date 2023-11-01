@@ -7,15 +7,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "building blocks", "building
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "services", "services", "{D64D1BAC-B4FA-4687-84B8-29D41F615EA3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LojaTobias.Identidade.Api", "src\services\LojaTobias.Identidade.Api\LojaTobias.Identidade.Api.csproj", "{5F3520DF-0E38-463E-A91A-7B7D57AA605B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LojaTobias.Identidade.Api", "src\services\LojaTobias.Identidade.Api\LojaTobias.Identidade.Api.csproj", "{5F3520DF-0E38-463E-A91A-7B7D57AA605B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LojaTobias.Api.Core", "src\building blocks\LojaTobias.Api.Core\LojaTobias.Api.Core.csproj", "{4ACD9F13-78FE-4A53-BF6A-3E04521DB008}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LojaTobias.Api.Core", "src\building blocks\LojaTobias.Api.Core\LojaTobias.Api.Core.csproj", "{4ACD9F13-78FE-4A53-BF6A-3E04521DB008}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LojaTobias.Core", "src\building blocks\LojaTobias.Core\LojaTobias.Core.csproj", "{2606ADBB-687A-4B93-8117-6BFBC938E38C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LojaTobias.Core", "src\building blocks\LojaTobias.Core\LojaTobias.Core.csproj", "{2606ADBB-687A-4B93-8117-6BFBC938E38C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LojaTobias.Domain", "src\building blocks\LojaTobias.Domain\LojaTobias.Domain.csproj", "{1A293E0D-7888-444E-8C33-DE84447E4DBA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LojaTobias.Domain", "src\building blocks\LojaTobias.Domain\LojaTobias.Domain.csproj", "{1A293E0D-7888-444E-8C33-DE84447E4DBA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LojaTobias.Infra", "src\building blocks\LojaTobias.Infra\LojaTobias.Infra.csproj", "{150CD854-E2BD-4F34-96FB-ADF5691FF070}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LojaTobias.Infra", "src\building blocks\LojaTobias.Infra\LojaTobias.Infra.csproj", "{150CD854-E2BD-4F34-96FB-ADF5691FF070}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LojaTobias.Catalogo.Api", "src\services\LojaTobias.Catalogo.Api\LojaTobias.Catalogo.Api.csproj", "{A4798B86-3D5C-40E1-92CD-A2483ACAC30D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -43,6 +45,10 @@ Global
 		{150CD854-E2BD-4F34-96FB-ADF5691FF070}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{150CD854-E2BD-4F34-96FB-ADF5691FF070}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{150CD854-E2BD-4F34-96FB-ADF5691FF070}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A4798B86-3D5C-40E1-92CD-A2483ACAC30D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A4798B86-3D5C-40E1-92CD-A2483ACAC30D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A4798B86-3D5C-40E1-92CD-A2483ACAC30D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A4798B86-3D5C-40E1-92CD-A2483ACAC30D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -53,6 +59,7 @@ Global
 		{2606ADBB-687A-4B93-8117-6BFBC938E38C} = {2DE364BC-FD42-4C85-A99A-ADFC45839650}
 		{1A293E0D-7888-444E-8C33-DE84447E4DBA} = {2DE364BC-FD42-4C85-A99A-ADFC45839650}
 		{150CD854-E2BD-4F34-96FB-ADF5691FF070} = {2DE364BC-FD42-4C85-A99A-ADFC45839650}
+		{A4798B86-3D5C-40E1-92CD-A2483ACAC30D} = {D64D1BAC-B4FA-4687-84B8-29D41F615EA3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {68BB3EB0-4A6C-4500-83EE-9FC52165DBF1}

@@ -16,12 +16,12 @@ namespace LojaTobias.Infra.Data.Migrations
                 columns: table => new
                 {
                     ProdutoId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Nome = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Nome = table.Column<string>(type: "nvarchar(1000)", nullable: false),
                     Ativo = table.Column<bool>(type: "bit", nullable: false),
                     DataCriacao = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    UsuarioCriacao = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UsuarioCriacao = table.Column<string>(type: "nvarchar(1000)", nullable: true),
                     DataAtualizacao = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    UsuarioAtualizacao = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    UsuarioAtualizacao = table.Column<string>(type: "nvarchar(1000)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -33,12 +33,12 @@ namespace LojaTobias.Infra.Data.Migrations
                 columns: table => new
                 {
                     UnidadeMedidaId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Nome = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Abreviacao = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Nome = table.Column<string>(type: "nvarchar(1000)", nullable: false),
+                    Abreviacao = table.Column<string>(type: "nvarchar(1000)", nullable: false),
                     DataCriacao = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    UsuarioCriacao = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UsuarioCriacao = table.Column<string>(type: "nvarchar(1000)", nullable: true),
                     DataAtualizacao = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    UsuarioAtualizacao = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    UsuarioAtualizacao = table.Column<string>(type: "nvarchar(1000)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -50,13 +50,13 @@ namespace LojaTobias.Infra.Data.Migrations
                 columns: table => new
                 {
                     ProdutoUnidadeId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Embalagem = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Embalagem = table.Column<string>(type: "nvarchar(1000)", nullable: false),
                     ProdutoId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     UnidadeMedidaId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     DataCriacao = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    UsuarioCriacao = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UsuarioCriacao = table.Column<string>(type: "nvarchar(1000)", nullable: true),
                     DataAtualizacao = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    UsuarioAtualizacao = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    UsuarioAtualizacao = table.Column<string>(type: "nvarchar(1000)", nullable: true)
                 },
                 constraints: table =>
                 {
