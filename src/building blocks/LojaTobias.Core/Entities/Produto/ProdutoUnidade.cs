@@ -6,7 +6,9 @@
         {
 
         }
-        public string Embalagem { get; private set; }
+        public decimal Quantidade { get; private set; }
+        public string? Embalagem { get; private set; }
+        public decimal? PesoEmbalagem { get; private set; }
 
         public Guid ProdutoId { get; private set; }
         public Produto Produto{ get; private set; }
