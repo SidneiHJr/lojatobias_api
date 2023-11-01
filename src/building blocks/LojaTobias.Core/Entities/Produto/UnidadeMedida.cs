@@ -1,14 +1,14 @@
 ﻿namespace LojaTobias.Core.Entities
 {
-    public class Produto : EntityBase
+    public class UnidadeMedida : EntityBase
     {
-        protected Produto()
+        protected UnidadeMedida()
         {
-            
+
         }
 
         public string Nome { get; private set; }
-        public bool Ativo { get; private set; }
+        public string Abreviacao { get; private set; }
 
         public ICollection<ProdutoUnidade> ProdutosUnidade { get; private set; }
     }
