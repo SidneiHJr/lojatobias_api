@@ -8,7 +8,8 @@ namespace LojaTobias.Catalogo.Api.Configuration
     {
         public ProdutoMapperConfig()
         {
-
+            CreateMap<ProdutoModel, Produto>();
+            CreateMap<Produto, ProdutoResponseModel>();
         }
     }
 }

@@ -12,6 +12,7 @@ namespace LojaTobias.Catalogo.Api.Configuration
         public static IServiceCollection AddDependencyConfig(this IServiceCollection services)
         {
             services.AddScoped(typeof(IService<>), typeof(Service<>));
+            services.AddScoped<IProdutoService, ProdutoService>();
 
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 

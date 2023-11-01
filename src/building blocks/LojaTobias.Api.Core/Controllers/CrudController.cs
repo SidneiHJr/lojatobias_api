@@ -11,14 +11,11 @@ namespace LojaTobias.Api.Core.Controllers
     {
         private readonly IService<TEntity> _service;
         protected readonly IMapper _mapper;
-        protected readonly ILogger _logger;
 
-        public CrudController(IService<TEntity> service, IMapper mapper,
-            ILogger<CrudController<TModel, TResponse, TEntity>> logger, INotifiable notifiable) : base(notifiable)
+        public CrudController(IService<TEntity> service, IMapper mapper, INotifiable notifiable) : base(notifiable)
         {
             _service = service;
             _mapper = mapper;
-            _logger = logger;
         }
 
         [HttpGet("{id}")]
@@ -27,16 +24,9 @@ namespace LojaTobias.Api.Core.Controllers
         [ProducesResponseType(typeof(InternalServerErrorModel), 500)]
         public virtual async Task<IActionResult> Get([FromRoute] Guid id)
         {
-            try
-            {
-                var resultado = _mapper.Map<TResponse>(await _service.GetAsync(id));
-                return CustomResponse(resultado);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Erro: {ex.Message}", ex);
-                return InternalServerError($"Erro: {ex.Message}");
-            }
+            var resultado = _mapper.Map<TResponse>(await _service.GetAsync(id));
+
+            return CustomResponse(resultado);
         }
 
         [HttpPost()]
@@ -46,16 +36,9 @@ namespace LojaTobias.Api.Core.Controllers
         [ProducesResponseType(typeof(InternalServerErrorModel), 500)]
         public virtual async Task<IActionResult> Insert([FromBody] TModel item)
         {
-            try
-            {
-                var resultado = await _service.InsertAsync(_mapper.Map<TEntity>(item));
-                return CustomResponse(resultado);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Erro: {ex.Message}", ex);
-                return InternalServerError($"Erro: {ex.Message}");
-            }
+            var resultado = await _service.InsertAsync(_mapper.Map<TEntity>(item));
+            return CustomResponse(resultado);
+
         }
 
         [HttpPut("{id}")]
@@ -65,17 +48,10 @@ namespace LojaTobias.Api.Core.Controllers
         [ProducesResponseType(typeof(InternalServerErrorModel), 500)]
         public virtual async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] TModel item)
         {
-            try
-            {
-                await _service.UpdateAsync(id, _mapper.Map<TEntity>(item));
+            await _service.UpdateAsync(id, _mapper.Map<TEntity>(item));
 
-                return CustomResponse();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Erro: {ex.Message}", ex);
-                return InternalServerError($"Erro: {ex.Message}");
-            }
+            return CustomResponse();
+
         }
 
 
@@ -86,17 +62,10 @@ namespace LojaTobias.Api.Core.Controllers
         [ProducesResponseType(typeof(InternalServerErrorModel), 500)]
         public virtual async Task<IActionResult> Delete([FromRoute] Guid id)
         {
-            try
-            {
-                await _service.DeleteAsync(id);
+            await _service.DeleteAsync(id);
 
-                return CustomResponse();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Erro: {ex.Message}", ex);
-                return InternalServerError($"Erro: {ex.Message}");
-            }
+            return CustomResponse();
+            
         }
 
     }

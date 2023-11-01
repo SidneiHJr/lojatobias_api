@@ -14,29 +14,13 @@ namespace LojaTobias.Infra.Mappings
             builder.Property(x => x.Id)
                 .HasColumnName("ProdutoId");
 
-            builder.HasMany(p => p.ProdutosUnidade)
-                .WithOne(x => x.Produto)
-                .HasForeignKey(x => x.Id);
-
-        }
-    }
-
-    public class ProdutoUnidadeMapping : IEntityTypeConfiguration<ProdutoUnidade>
-    {
-        public void Configure(EntityTypeBuilder<ProdutoUnidade> builder)
-        {
-            builder.ToTable("ProdutoUnidade");
-
-            builder.HasKey(x => x.Id);
-            builder.Property(x => x.Id)
-                .HasColumnName("ProdutoUnidadeId");
-
             builder.HasOne(p => p.UnidadeMedida)
-                .WithMany(x => x.ProdutosUnidade)
-                .HasForeignKey(p => p.Id);
+                .WithMany(x => x.Produtos)
+                .HasForeignKey(p => p.UnidadeMedidaId);
 
         }
     }
+
     public class UnidadeMedidaMapping : IEntityTypeConfiguration<UnidadeMedida>
     {
         public void Configure(EntityTypeBuilder<UnidadeMedida> builder)

@@ -18,6 +18,7 @@ namespace LojaTobias.Domain.Services
         public async Task<IQueryable<Produto>> FiltrarAsync(string? termo, string? colunaOrdem, string direcaoOrdem)
         {
             var resultado = _repository.Table
+                                            .Include(p => p.UnidadeMedida)
                                             .Where(p => (string.IsNullOrEmpty(termo) ||
                                                         p.Nome.ToUpper().Contains(termo.ToUpper())) &&
                                                         p.Removido == false)
@@ -32,6 +33,15 @@ namespace LojaTobias.Domain.Services
 
             return await Task.FromResult(resultado);
 
+        }
+
+        public override async Task<Produto?> GetAsync(Guid id)
+        {
+            var resultado = await _repository.Table
+                                                .Include(p => p.UnidadeMedida)
+                                                .FirstOrDefaultAsync(p => p.Id == id);
+
+            return resultado;
         }
     }
 }

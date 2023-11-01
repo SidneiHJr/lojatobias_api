@@ -15,9 +15,19 @@
         }
 
         public string Nome { get; private set; }
+        public string Descricao { get; private set; }
+        public decimal Quantidade { get; private set; }
         public bool Ativo { get; private set; }
-        public bool Removido { get; private set; } 
-        public ICollection<ProdutoUnidade>? ProdutosUnidade { get; private set; }
+        public bool Removido { get; private set; }
+        
+        public Guid UnidadeMedidaId { get; private set; }
+        public UnidadeMedida UnidadeMedida { get; private set; }
+
+        public void Atualizar(Produto produto)
+        {
+            Nome = produto.Nome;
+            Ativo = produto.Ativo;
+        }
 
         public void Remover()
         {
