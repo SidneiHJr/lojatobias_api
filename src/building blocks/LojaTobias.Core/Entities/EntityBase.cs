@@ -1,4 +1,8 @@
-﻿namespace LojaTobias.Core.Entities
+﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
+
+namespace LojaTobias.Core.Entities
 {
     public abstract class EntityBase
     {
@@ -9,8 +13,14 @@
 
         public Guid Id { get; set; }
         public DateTime? DataCriacao { get; set; }
+
+        [Column(TypeName = "varchar")]
+        [StringLength(1000)]
         public string? UsuarioCriacao { get; set; }
         public DateTime? DataAtualizacao { get; set; }
+
+        [Column(TypeName = "varchar")]
+        [StringLength(1000)]
         public string? UsuarioAtualizacao { get; set; }
 
         public void NovaInsercao(string usuarioId)

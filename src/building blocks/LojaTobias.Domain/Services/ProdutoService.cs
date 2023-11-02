@@ -7,12 +7,15 @@ namespace LojaTobias.Domain.Services
 {
     public class ProdutoService : Service<Produto>, IProdutoService
     {
+        private readonly IRepository<UnidadeMedida> _unidadeMedidaRepository;
         public ProdutoService(
-            IRepository<Produto> repository, 
-            INotifiable notifiable, 
-            IUnitOfWork unitOfWork, 
-            IAspnetUser aspnetUser) : base(repository, notifiable, unitOfWork, aspnetUser)
+            IRepository<Produto> repository,
+            INotifiable notifiable,
+            IUnitOfWork unitOfWork,
+            IAspnetUser aspnetUser,
+            IRepository<UnidadeMedida> unidadeMedidaRepository) : base(repository, notifiable, unitOfWork, aspnetUser)
         {
+            _unidadeMedidaRepository = unidadeMedidaRepository;
         }
 
         public async Task<IQueryable<Produto>> FiltrarAsync(string? termo, string? colunaOrdem, string direcaoOrdem)
@@ -42,6 +45,16 @@ namespace LojaTobias.Domain.Services
                                                 .FirstOrDefaultAsync(p => p.Id == id);
 
             return resultado;
+        }
+
+        public async Task<UnidadeMedida?> BuscarUnidadeMedidaPorNomeOuAbreviacao(string nome, string abreviacao)
+        {
+            var unidadeMedida = await _unidadeMedidaRepository.Table
+                                                                .FirstOrDefaultAsync(p => (p.Nome.ToUpper() == nome.ToUpper() || 
+                                                                                          p.Abreviacao.ToLower() == abreviacao.ToLower()) &&
+                                                                                          p.Removido == false);
+
+            return unidadeMedida;
         }
     }
 }

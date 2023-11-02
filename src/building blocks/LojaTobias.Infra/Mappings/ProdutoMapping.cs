@@ -14,9 +14,7 @@ namespace LojaTobias.Infra.Mappings
             builder.Property(x => x.Id)
                 .HasColumnName("ProdutoId");
 
-            builder.HasOne(p => p.UnidadeMedida)
-                .WithMany(x => x.Produtos)
-                .HasForeignKey(p => p.UnidadeMedidaId);
+            builder.HasOne(p => p.UnidadeMedida);
 
         }
     }

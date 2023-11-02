@@ -16,7 +16,7 @@ namespace LojaTobias.Infra.Data.Migrations
                 type: "nvarchar(1000)",
                 nullable: true,
                 oldClrType: typeof(string),
-                oldType: "nvarchar(max)");
+                oldType: "nvarchar(1000)");
 
             migrationBuilder.AddColumn<decimal>(
                 name: "PesoEmbalagem",
@@ -57,11 +57,11 @@ namespace LojaTobias.Infra.Data.Migrations
             migrationBuilder.AlterColumn<string>(
                 name: "Embalagem",
                 table: "ProdutoUnidade",
-                type: "nvarchar(max)",
+                type: "nvarchar(1000)",
                 nullable: false,
                 defaultValue: "",
                 oldClrType: typeof(string),
-                oldType: "nvarchar(max)",
+                oldType: "nvarchar(1000)",
                 oldNullable: true);
         }
     }

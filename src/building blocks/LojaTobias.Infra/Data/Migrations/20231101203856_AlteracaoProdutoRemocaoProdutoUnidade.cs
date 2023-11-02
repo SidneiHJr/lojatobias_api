@@ -17,7 +17,7 @@ namespace LojaTobias.Infra.Data.Migrations
             migrationBuilder.AddColumn<string>(
                 name: "Descricao",
                 table: "Produto",
-                type: "nvarchar(max)",
+                type: "nvarchar(1000)",
                 nullable: false,
                 defaultValue: "");
 
@@ -79,13 +79,13 @@ namespace LojaTobias.Infra.Data.Migrations
                     ProdutoUnidadeId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     DataAtualizacao = table.Column<DateTime>(type: "datetime2", nullable: true),
                     DataCriacao = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    Embalagem = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Embalagem = table.Column<string>(type: "nvarchar(1000)", nullable: true),
                     PesoEmbalagem = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
                     ProdutoId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Quantidade = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     UnidadeMedidaId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    UsuarioAtualizacao = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    UsuarioCriacao = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    UsuarioAtualizacao = table.Column<string>(type: "nvarchar(1000)", nullable: true),
+                    UsuarioCriacao = table.Column<string>(type: "nvarchar(1000)", nullable: true)
                 },
                 constraints: table =>
                 {

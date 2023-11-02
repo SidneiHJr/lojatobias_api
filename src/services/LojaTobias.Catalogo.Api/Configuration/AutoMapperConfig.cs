@@ -10,6 +10,10 @@ namespace LojaTobias.Catalogo.Api.Configuration
         {
             CreateMap<ProdutoModel, Produto>();
             CreateMap<Produto, ProdutoResponseModel>();
+
+            CreateMap<UnidadeMedidaModel, UnidadeMedida>();
+            CreateMap<UnidadeMedida, UnidadeMedidaResponseModel>();
+
         }
     }
 }

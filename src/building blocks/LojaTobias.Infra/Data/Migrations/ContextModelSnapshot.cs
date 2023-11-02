@@ -32,7 +32,8 @@ namespace LojaTobias.Infra.Data.Migrations
 
                     b.Property<string>("Acao")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(1000)
+                        .HasColumnType("varchar");
 
                     b.Property<DateTime?>("DataAtualizacao")
                         .HasColumnType("datetime2");
@@ -42,21 +43,26 @@ namespace LojaTobias.Infra.Data.Migrations
 
                     b.Property<string>("Mensagem")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(1000)
+                        .HasColumnType("varchar");
 
                     b.Property<string>("Tipo")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(1000)
+                        .HasColumnType("varchar");
 
                     b.Property<string>("Usuario")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(1000)
+                        .HasColumnType("varchar");
 
                     b.Property<string>("UsuarioAtualizacao")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(1000)
+                        .HasColumnType("varchar");
 
                     b.Property<string>("UsuarioCriacao")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(1000)
+                        .HasColumnType("varchar");
 
                     b.HasKey("Id");
 
@@ -80,12 +86,13 @@ namespace LojaTobias.Infra.Data.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Descricao")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(1000)
+                        .HasColumnType("varchar");
 
                     b.Property<string>("Nome")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(1000)
+                        .HasColumnType("varchar");
 
                     b.Property<decimal>("Quantidade")
                         .HasColumnType("decimal(18,2)");
@@ -97,10 +104,12 @@ namespace LojaTobias.Infra.Data.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("UsuarioAtualizacao")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(1000)
+                        .HasColumnType("varchar");
 
                     b.Property<string>("UsuarioCriacao")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(1000)
+                        .HasColumnType("varchar");
 
                     b.HasKey("Id");
 
@@ -118,7 +127,8 @@ namespace LojaTobias.Infra.Data.Migrations
 
                     b.Property<string>("Abreviacao")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(1000)
+                        .HasColumnType("varchar");
 
                     b.Property<DateTime?>("DataAtualizacao")
                         .HasColumnType("datetime2");
@@ -128,13 +138,19 @@ namespace LojaTobias.Infra.Data.Migrations
 
                     b.Property<string>("Nome")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(1000)
+                        .HasColumnType("varchar");
+
+                    b.Property<bool>("Removido")
+                        .HasColumnType("bit");
 
                     b.Property<string>("UsuarioAtualizacao")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(1000)
+                        .HasColumnType("varchar");
 
                     b.Property<string>("UsuarioCriacao")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(1000)
+                        .HasColumnType("varchar");
 
                     b.HasKey("Id");
 
@@ -159,20 +175,24 @@ namespace LojaTobias.Infra.Data.Migrations
 
                     b.Property<string>("Nome")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(1000)
+                        .HasColumnType("varchar");
 
                     b.Property<string>("Perfil")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(1000)
+                        .HasColumnType("varchar");
 
                     b.Property<bool>("Removido")
                         .HasColumnType("bit");
 
                     b.Property<string>("UsuarioAtualizacao")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(1000)
+                        .HasColumnType("varchar");
 
                     b.Property<string>("UsuarioCriacao")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(1000)
+                        .HasColumnType("varchar");
 
                     b.HasKey("Id");
 
@@ -387,7 +407,7 @@ namespace LojaTobias.Infra.Data.Migrations
             modelBuilder.Entity("LojaTobias.Core.Entities.Produto", b =>
                 {
                     b.HasOne("LojaTobias.Core.Entities.UnidadeMedida", "UnidadeMedida")
-                        .WithMany("Produtos")
+                        .WithMany()
                         .HasForeignKey("UnidadeMedidaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -404,7 +424,8 @@ namespace LojaTobias.Infra.Data.Migrations
 
                             b1.Property<string>("Endereco")
                                 .IsRequired()
-                                .HasColumnType("nvarchar(max)")
+                                .HasMaxLength(1000)
+                                .HasColumnType("varchar")
                                 .HasColumnName("Email");
 
                             b1.HasKey("UsuarioId");
@@ -468,11 +489,6 @@ namespace LojaTobias.Infra.Data.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("LojaTobias.Core.Entities.UnidadeMedida", b =>
-                {
-                    b.Navigation("Produtos");
                 });
 #pragma warning restore 612, 618
         }

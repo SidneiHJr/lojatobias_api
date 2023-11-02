@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LojaTobias.Infra.Data.Migrations
 {
     [DbContext(typeof(Context))]
-    [Migration("20231027201758_AlterIdentityAddAspnetUserExt")]
-    partial class AlterIdentityAddAspnetUserExt
+    [Migration("20231102224503_AlterUnidadeMedidaAddRemovido")]
+    partial class AlterUnidadeMedidaAddRemovido
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,6 +25,126 @@ namespace LojaTobias.Infra.Data.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("LojaTobias.Core.Entities.Log", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("LogId");
+
+                    b.Property<string>("Acao")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<DateTime?>("DataAtualizacao")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DataCriacao")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Mensagem")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("Tipo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("Usuario")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("UsuarioAtualizacao")
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("UsuarioCriacao")
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Log", (string)null);
+                });
+
+            modelBuilder.Entity("LojaTobias.Core.Entities.Produto", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("ProdutoId");
+
+                    b.Property<bool>("Ativo")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("DataAtualizacao")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DataCriacao")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Descricao")
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("Nome")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<decimal>("Quantidade")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<bool>("Removido")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("UnidadeMedidaId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("UsuarioAtualizacao")
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("UsuarioCriacao")
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UnidadeMedidaId");
+
+                    b.ToTable("Produto", (string)null);
+                });
+
+            modelBuilder.Entity("LojaTobias.Core.Entities.UnidadeMedida", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("UnidadeMedidaId");
+
+                    b.Property<string>("Abreviacao")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<DateTime?>("DataAtualizacao")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DataCriacao")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Nome")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<bool>("Removido")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("UsuarioAtualizacao")
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("UsuarioCriacao")
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("UnidadeMedida", (string)null);
+                });
 
             modelBuilder.Entity("LojaTobias.Core.Entities.Usuario", b =>
                 {
@@ -43,6 +163,10 @@ namespace LojaTobias.Infra.Data.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Nome")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("Perfil")
                         .IsRequired()
                         .HasColumnType("nvarchar(1000)");
 
@@ -263,6 +387,17 @@ namespace LojaTobias.Infra.Data.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
+                });
+
+            modelBuilder.Entity("LojaTobias.Core.Entities.Produto", b =>
+                {
+                    b.HasOne("LojaTobias.Core.Entities.UnidadeMedida", "UnidadeMedida")
+                        .WithMany()
+                        .HasForeignKey("UnidadeMedidaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("UnidadeMedida");
                 });
 
             modelBuilder.Entity("LojaTobias.Core.Entities.Usuario", b =>

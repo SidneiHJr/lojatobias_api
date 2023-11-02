@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LojaTobias.Infra.Data.Migrations
 {
     [DbContext(typeof(Context))]
-    [Migration("20231027201758_AlterIdentityAddAspnetUserExt")]
-    partial class AlterIdentityAddAspnetUserExt
+    [Migration("20231102231515_CorrecoesTipoString")]
+    partial class CorrecoesTipoString
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,6 +25,140 @@ namespace LojaTobias.Infra.Data.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("LojaTobias.Core.Entities.Log", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("LogId");
+
+                    b.Property<string>("Acao")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("varchar");
+
+                    b.Property<DateTime?>("DataAtualizacao")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DataCriacao")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Mensagem")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("varchar");
+
+                    b.Property<string>("Tipo")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("varchar");
+
+                    b.Property<string>("Usuario")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("varchar");
+
+                    b.Property<string>("UsuarioAtualizacao")
+                        .HasMaxLength(1000)
+                        .HasColumnType("varchar");
+
+                    b.Property<string>("UsuarioCriacao")
+                        .HasMaxLength(1000)
+                        .HasColumnType("varchar");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Log", (string)null);
+                });
+
+            modelBuilder.Entity("LojaTobias.Core.Entities.Produto", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("ProdutoId");
+
+                    b.Property<bool>("Ativo")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("DataAtualizacao")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DataCriacao")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Descricao")
+                        .HasMaxLength(1000)
+                        .HasColumnType("varchar");
+
+                    b.Property<string>("Nome")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("varchar");
+
+                    b.Property<decimal>("Quantidade")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<bool>("Removido")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("UnidadeMedidaId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("UsuarioAtualizacao")
+                        .HasMaxLength(1000)
+                        .HasColumnType("varchar");
+
+                    b.Property<string>("UsuarioCriacao")
+                        .HasMaxLength(1000)
+                        .HasColumnType("varchar");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UnidadeMedidaId");
+
+                    b.ToTable("Produto", (string)null);
+                });
+
+            modelBuilder.Entity("LojaTobias.Core.Entities.UnidadeMedida", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("UnidadeMedidaId");
+
+                    b.Property<string>("Abreviacao")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("varchar");
+
+                    b.Property<DateTime?>("DataAtualizacao")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DataCriacao")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Nome")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("varchar");
+
+                    b.Property<bool>("Removido")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("UsuarioAtualizacao")
+                        .HasMaxLength(1000)
+                        .HasColumnType("varchar");
+
+                    b.Property<string>("UsuarioCriacao")
+                        .HasMaxLength(1000)
+                        .HasColumnType("varchar");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("UnidadeMedida", (string)null);
+                });
 
             modelBuilder.Entity("LojaTobias.Core.Entities.Usuario", b =>
                 {
@@ -44,16 +178,24 @@ namespace LojaTobias.Infra.Data.Migrations
 
                     b.Property<string>("Nome")
                         .IsRequired()
-                        .HasColumnType("nvarchar(1000)");
+                        .HasMaxLength(1000)
+                        .HasColumnType("varchar");
+
+                    b.Property<string>("Perfil")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("varchar");
 
                     b.Property<bool>("Removido")
                         .HasColumnType("bit");
 
                     b.Property<string>("UsuarioAtualizacao")
-                        .HasColumnType("nvarchar(1000)");
+                        .HasMaxLength(1000)
+                        .HasColumnType("varchar");
 
                     b.Property<string>("UsuarioCriacao")
-                        .HasColumnType("nvarchar(1000)");
+                        .HasMaxLength(1000)
+                        .HasColumnType("varchar");
 
                     b.HasKey("Id");
 
@@ -265,6 +407,17 @@ namespace LojaTobias.Infra.Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("LojaTobias.Core.Entities.Produto", b =>
+                {
+                    b.HasOne("LojaTobias.Core.Entities.UnidadeMedida", "UnidadeMedida")
+                        .WithMany()
+                        .HasForeignKey("UnidadeMedidaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("UnidadeMedida");
+                });
+
             modelBuilder.Entity("LojaTobias.Core.Entities.Usuario", b =>
                 {
                     b.OwnsOne("LojaTobias.Core.ValueObjects.Email", "Email", b1 =>
@@ -274,7 +427,8 @@ namespace LojaTobias.Infra.Data.Migrations
 
                             b1.Property<string>("Endereco")
                                 .IsRequired()
-                                .HasColumnType("nvarchar(1000)")
+                                .HasMaxLength(1000)
+                                .HasColumnType("varchar")
                                 .HasColumnName("Email");
 
                             b1.HasKey("UsuarioId");

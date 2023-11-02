@@ -1,4 +1,7 @@
-﻿using System.Net.Mail;
+﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
+using System.Net.Mail;
 
 namespace LojaTobias.Core.ValueObjects
 {
@@ -14,6 +17,8 @@ namespace LojaTobias.Core.ValueObjects
             Endereco = endereco;
         }
 
+        [Column(TypeName = "varchar")]
+        [StringLength(1000)]
         public string Endereco { get; set; }
 
         public bool EmailValido()

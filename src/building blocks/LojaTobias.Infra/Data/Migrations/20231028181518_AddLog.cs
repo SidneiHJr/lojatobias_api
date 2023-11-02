@@ -19,7 +19,7 @@ namespace LojaTobias.Infra.Data.Migrations
                     Usuario = table.Column<string>(type: "nvarchar(1000)", nullable: false),
                     Acao = table.Column<string>(type: "nvarchar(1000)", nullable: false),
                     Tipo = table.Column<string>(type: "nvarchar(1000)", nullable: false),
-                    Mensagem = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Mensagem = table.Column<string>(type: "nvarchar(1000)", nullable: false),
                     DataCriacao = table.Column<DateTime>(type: "datetime2", nullable: true),
                     UsuarioCriacao = table.Column<string>(type: "nvarchar(1000)", nullable: true),
                     DataAtualizacao = table.Column<DateTime>(type: "datetime2", nullable: true),
