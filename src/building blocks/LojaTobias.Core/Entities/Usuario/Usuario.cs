@@ -23,14 +23,8 @@ namespace LojaTobias.Core.Entities
             Removido = false;
         }
 
-
-        [Column(TypeName = "varchar")]
-        [StringLength(1000)]
         public string Nome { get; private set; }
         public Email Email { get; private set; }
-
-        [Column(TypeName = "varchar")]
-        [StringLength(1000)]
         public string Perfil { get; private set; }
         public bool Ativo { get; private set; }
         public bool Removido { get; private set; }

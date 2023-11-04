@@ -4,6 +4,7 @@ using LojaTobias.Infra.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LojaTobias.Infra.Data.Migrations
 {
     [DbContext(typeof(Context))]
-    partial class ContextModelSnapshot : ModelSnapshot
+    [Migration("20231104160758_AddPedido")]
+    partial class AddPedido
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -94,11 +97,6 @@ namespace LojaTobias.Infra.Data.Migrations
                         .HasMaxLength(1000)
                         .HasColumnType("varchar");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("varchar");
-
                     b.Property<string>("Tipo")
                         .IsRequired()
                         .HasMaxLength(1000)
@@ -146,9 +144,6 @@ namespace LojaTobias.Infra.Data.Migrations
                     b.Property<decimal>("Quantidade")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<Guid>("UnidadeMedidaId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("UsuarioAtualizacao")
                         .HasMaxLength(1000)
                         .HasColumnType("varchar");
@@ -157,16 +152,11 @@ namespace LojaTobias.Infra.Data.Migrations
                         .HasMaxLength(1000)
                         .HasColumnType("varchar");
 
-                    b.Property<decimal>("Valor")
-                        .HasColumnType("decimal(18,2)");
-
                     b.HasKey("Id");
 
                     b.HasIndex("PedidoId");
 
                     b.HasIndex("ProdutoId");
-
-                    b.HasIndex("UnidadeMedidaId");
 
                     b.ToTable("PedidoItem", (string)null);
                 });
@@ -257,45 +247,6 @@ namespace LojaTobias.Infra.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("UnidadeMedida", (string)null);
-                });
-
-            modelBuilder.Entity("LojaTobias.Core.Entities.UnidadeMedidaConversao", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("UnidadeMedidaConversaoId");
-
-                    b.Property<DateTime?>("DataAtualizacao")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("DataCriacao")
-                        .HasColumnType("datetime2");
-
-                    b.Property<decimal>("FatorConversao")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<Guid>("UnidadeMedidaEntradaId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("UnidadeMedidaSaidaId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("UsuarioAtualizacao")
-                        .HasMaxLength(1000)
-                        .HasColumnType("varchar");
-
-                    b.Property<string>("UsuarioCriacao")
-                        .HasMaxLength(1000)
-                        .HasColumnType("varchar");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UnidadeMedidaEntradaId");
-
-                    b.HasIndex("UnidadeMedidaSaidaId");
-
-                    b.ToTable("UnidadeMedidaConversao", (string)null);
                 });
 
             modelBuilder.Entity("LojaTobias.Core.Entities.Usuario", b =>
@@ -559,17 +510,9 @@ namespace LojaTobias.Infra.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("LojaTobias.Core.Entities.UnidadeMedida", "UnidadeMedida")
-                        .WithMany()
-                        .HasForeignKey("UnidadeMedidaId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.Navigation("Pedido");
 
                     b.Navigation("Produto");
-
-                    b.Navigation("UnidadeMedida");
                 });
 
             modelBuilder.Entity("LojaTobias.Core.Entities.Produto", b =>
@@ -581,25 +524,6 @@ namespace LojaTobias.Infra.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("UnidadeMedida");
-                });
-
-            modelBuilder.Entity("LojaTobias.Core.Entities.UnidadeMedidaConversao", b =>
-                {
-                    b.HasOne("LojaTobias.Core.Entities.UnidadeMedida", "UnidadeMedidaEntrada")
-                        .WithMany("ConversoesEntrada")
-                        .HasForeignKey("UnidadeMedidaEntradaId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("LojaTobias.Core.Entities.UnidadeMedida", "UnidadeMedidaSaida")
-                        .WithMany("ConversoesSaida")
-                        .HasForeignKey("UnidadeMedidaSaidaId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("UnidadeMedidaEntrada");
-
-                    b.Navigation("UnidadeMedidaSaida");
                 });
 
             modelBuilder.Entity("LojaTobias.Core.Entities.Usuario", b =>
@@ -686,13 +610,6 @@ namespace LojaTobias.Infra.Data.Migrations
             modelBuilder.Entity("LojaTobias.Core.Entities.Produto", b =>
                 {
                     b.Navigation("Pedidos");
-                });
-
-            modelBuilder.Entity("LojaTobias.Core.Entities.UnidadeMedida", b =>
-                {
-                    b.Navigation("ConversoesEntrada");
-
-                    b.Navigation("ConversoesSaida");
                 });
 #pragma warning restore 612, 618
         }

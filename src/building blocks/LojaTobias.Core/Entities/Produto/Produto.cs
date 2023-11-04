@@ -20,20 +20,16 @@ namespace LojaTobias.Core.Entities
             Removido = false;
         }
 
-        [Column(TypeName = "varchar")]
-        [StringLength(1000)]
         public string Nome { get; private set; }
-
-        [Column(TypeName = "varchar")]
-        [StringLength(1000)]
         public string? Descricao { get; private set; }
-
         public decimal Quantidade { get; private set; }
         public bool Ativo { get; private set; }
         public bool Removido { get; private set; }
         
         public Guid UnidadeMedidaId { get; private set; }
-        public UnidadeMedida UnidadeMedida { get; private set; }
+        public virtual UnidadeMedida UnidadeMedida { get; private set; }
+
+        public virtual ICollection<PedidoItem> Pedidos { get; private set; }
 
         public void Atualizar(Produto produto)
         {
@@ -44,6 +40,11 @@ namespace LojaTobias.Core.Entities
         public void Remover()
         {
             Removido = true;
+        }
+
+        public void AdicionarQuantidade(decimal quantidade)
+        {
+            Quantidade += quantidade;
         }
     }
 }

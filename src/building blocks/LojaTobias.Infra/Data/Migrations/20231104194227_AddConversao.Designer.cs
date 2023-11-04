@@ -4,6 +4,7 @@ using LojaTobias.Infra.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LojaTobias.Infra.Data.Migrations
 {
     [DbContext(typeof(Context))]
-    partial class ContextModelSnapshot : ModelSnapshot
+    [Migration("20231104194227_AddConversao")]
+    partial class AddConversao
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -94,11 +97,6 @@ namespace LojaTobias.Infra.Data.Migrations
                         .HasMaxLength(1000)
                         .HasColumnType("varchar");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("varchar");
-
                     b.Property<string>("Tipo")
                         .IsRequired()
                         .HasMaxLength(1000)
@@ -156,9 +154,6 @@ namespace LojaTobias.Infra.Data.Migrations
                     b.Property<string>("UsuarioCriacao")
                         .HasMaxLength(1000)
                         .HasColumnType("varchar");
-
-                    b.Property<decimal>("Valor")
-                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
 

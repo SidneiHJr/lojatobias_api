@@ -11,15 +11,12 @@ namespace LojaTobias.Core.Entities
 
         }
 
-        [Column(TypeName = "varchar")]
-        [StringLength(1000)]
         public string Nome { get; private set; }
-
-        [Column(TypeName = "varchar")]
-        [StringLength(1000)]
         public string Abreviacao { get; private set; }
-
         public bool Removido { get; private set; }
+
+        public virtual ICollection<UnidadeMedidaConversao> ConversoesEntrada { get; set; }
+        public virtual ICollection<UnidadeMedidaConversao> ConversoesSaida { get; set; }
 
         public void Atualizar(UnidadeMedida unidadeMedida)
         {

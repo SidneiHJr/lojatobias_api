@@ -174,5 +174,22 @@ namespace LojaTobias.Catalogo.Api.Controllers
             return CustomResponse();
         }
         #endregion
+
+        #region Conversao Unidade de Medida
+
+        [HttpPost("unidade-medida-conversao")]
+        [Produces("application/json")]
+        [ProducesResponseType(typeof(Guid), 200)]
+        [ProducesResponseType(typeof(BadRequestModel), 400)]
+        [ProducesResponseType(typeof(InternalServerErrorModel), 500)]
+        [Authorize(Roles = "Administrador")]
+        public async Task<IActionResult> InserirUnidadeMedidaConversao([FromBody] UnidadeMedidaConversaoModel model)
+        {
+            var resultado = await _produtoService.InserirUnidadeMedidaConversao(_mapper.Map<UnidadeMedidaConversao>(model));
+
+            return CustomResponse(resultado);
+        }
+
+        #endregion
     }
 }

@@ -14,6 +14,22 @@ namespace LojaTobias.Infra.Mappings
             builder.Property(x => x.Id)
                 .HasColumnName("UsuarioId");
 
+            builder.Property(p => p.UsuarioCriacao)
+                .HasColumnType("varchar")
+                .HasMaxLength(1000);
+
+            builder.Property(p => p.UsuarioAtualizacao)
+                .HasColumnType("varchar")
+                .HasMaxLength(1000);
+
+            builder.Property(p => p.Nome)
+                .HasColumnType("varchar")
+                .HasMaxLength(1000);
+
+            builder.Property(p => p.Perfil)
+                .HasColumnType("varchar")
+                .HasMaxLength(1000);
+
             builder.OwnsOne(p => p.Email, email =>
             {
                 email.Property(x => x.Endereco).HasColumnName("Email");

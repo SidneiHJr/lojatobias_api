@@ -14,6 +14,8 @@ namespace LojaTobias.Catalogo.Api.Configuration
             CreateMap<UnidadeMedidaModel, UnidadeMedida>();
             CreateMap<UnidadeMedida, UnidadeMedidaResponseModel>();
 
+            CreateMap<UnidadeMedidaConversaoModel, UnidadeMedidaConversao>();
+
         }
     }
 }
