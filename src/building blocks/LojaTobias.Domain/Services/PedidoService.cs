@@ -86,6 +86,42 @@ namespace LojaTobias.Domain.Services
             return resultado;
         }
 
+        public async Task FinalizarPedidoAsync(Guid id)
+        {
+            var pedido = await _repository.Table
+                                            .Include(p => p.Produtos)
+                                            .FirstOrDefaultAsync(p => p.Id == id);
+
+            if (pedido == null)
+            {
+                _notifiable.AddNotification("Falha ao buscar pedido");
+                return;
+            }
+
+            pedido.AtualizarStatus(StatusPedidoEnum.Finalizado.ToString());
+
+            _repository.Update(pedido);
+            await _unitOfWork.CommitAsync();
+        }
+
+        public async Task CancelarPedidoAsync(Guid id)
+        {
+            var pedido = await _repository.GetAsync(id);
+
+            if (pedido == null)
+            {
+                _notifiable.AddNotification("Falha ao buscar pedido");
+                return;
+            }
+
+            pedido.AtualizarStatus(StatusPedidoEnum.Cancelado.ToString());
+
+            _repository.Update(pedido);
+            await _unitOfWork.CommitAsync();
+        }
+
+        #region Pedido de Compra
+
         public async Task<Guid> InserirPedidoCompraAsync(Pedido pedido)
         {
             pedido.NovoPedido(TipoPedidoEnum.Compra.ToString());
@@ -124,58 +160,70 @@ namespace LojaTobias.Domain.Services
 
             pedido.AtualizarTotal(totalPedido);
 
-            await Validate(pedido);
+            var resultado = await InsertAsync(pedido);
+
+            return resultado;
+        }
+
+        #endregion
+
+        #region Pedido de Venda
+
+        public async Task<Guid> InserirPedidoVendaAsync(Pedido pedido)
+        {
+            pedido.NovoPedido(TipoPedidoEnum.Venda.ToString());
+
+            decimal totalPedido = 0;
+
+            foreach (var pedidoItem in pedido.Produtos)
+            {
+                var produto = await _produtoRepository.Table
+                                                        .Include(p => p.UnidadeMedida)
+                                                        .AsNoTracking()
+                                                        .FirstOrDefaultAsync(p => p.Id == pedidoItem.ProdutoId);
+
+                if (produto == null)
+                {
+                    _notifiable.AddNotification("Falha ao buscar produto do pedido");
+                    return Guid.Empty;
+                }
+
+                var quantidadeItem = pedidoItem.Quantidade;
+
+
+                if (pedidoItem.UnidadeMedidaId != produto.UnidadeMedidaId)
+                {
+                    var conversao = await _unidadeMedidaConversaoRepository.Table
+                                                                                .AsNoTracking()
+                                                                                .FirstOrDefaultAsync(p => p.UnidadeMedidaEntradaId == pedidoItem.UnidadeMedidaId &&
+                                                                                                          p.UnidadeMedidaSaidaId == produto.UnidadeMedidaId);
+
+                    if (conversao == null)
+                    {
+                        _notifiable.AddNotification($"Não existe uma conversão válida para o produto {produto.Nome}");
+                        return Guid.Empty;
+                    }
+
+                    quantidadeItem = pedidoItem.Quantidade * conversao.FatorConversao;
+                }
+
+                //Checar se tem estoque
+                if(produto.Quantidade < quantidadeItem)
+                    _notifiable.AddNotification($"O produto {produto.Nome} não tem estoque suficiente. Estoque disponível {produto.Quantidade}{produto.UnidadeMedida.Abreviacao}");
+
+                totalPedido += pedidoItem.Valor;
+            }
 
             if (_notifiable.HasNotification)
                 return Guid.Empty;
 
-            pedido.NovaInsercao(string.IsNullOrEmpty(pedido.UsuarioCriacao) ? _aspnetUser.GetUserId() : pedido.UsuarioCriacao);
+            pedido.AtualizarTotal(totalPedido);
 
-            await _repository.InsertAsync(pedido);
-            var sucesso = await _unitOfWork.CommitAsync();
+            var resultado = await InsertAsync(pedido);
 
-            if (!sucesso)
-            {
-                _notifiable.AddNotification("Erro ao inserir pedido");
-                return Guid.Empty;
-            }
-
-            return pedido.Id;
+            return resultado;
         }
 
-        public async Task FinalizarPedidoCompraAsync(Guid id)
-        {
-            var pedido = await _repository.Table
-                                            .Include(p => p.Produtos)
-                                            .FirstOrDefaultAsync(p => p.Id == id);
-
-            if(pedido == null)
-            {
-                _notifiable.AddNotification("Falha ao buscar pedido");
-                return;
-            }
-
-            pedido.AtualizarStatus(StatusPedidoEnum.Finalizado.ToString());
-
-            _repository.Update(pedido);
-            await _unitOfWork.CommitAsync();
-        }
-
-        public async Task CancelarPedidoCompraAsync(Guid id)
-        {
-            var pedido = await _repository.GetAsync(id);
-
-            if (pedido == null)
-            {
-                _notifiable.AddNotification("Falha ao buscar pedido");
-                return;
-            }
-
-            pedido.AtualizarStatus(StatusPedidoEnum.Cancelado.ToString());
-
-            _repository.Update(pedido);
-            await _unitOfWork.CommitAsync();
-        }
-
+        #endregion
     }
 }

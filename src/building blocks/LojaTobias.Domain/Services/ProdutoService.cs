@@ -167,6 +167,84 @@ namespace LojaTobias.Domain.Services
             await _unitOfWork.CommitTransactionAsync();
         }
 
+        public async Task VenderPeloPedidoAsync(Guid pedidoId)
+        {
+            var pedido = await _pedidoRepository.Table
+                                                    .Include(p => p.Produtos)
+                                                    .FirstOrDefaultAsync(p => p.Id == pedidoId);
+
+            if (pedido == null)
+            {
+                _notifiable.AddNotification("Falha ao buscar o pedido");
+                return;
+            }
+
+            if (pedido.Status != StatusPedidoEnum.Realizado.ToString())
+            {
+                _notifiable.AddNotification($"Não é possível finalizar o pedido pois ele está {pedido.Status}");
+                return;
+            }
+
+            if (pedido.Tipo != TipoPedidoEnum.Venda.ToString())
+            {
+                _notifiable.AddNotification("O pedido não é um pedido de venda");
+                return;
+            }
+
+            _unitOfWork.BeginTransaction();
+
+            foreach (var pedidoItem in pedido.Produtos)
+            {
+
+                var produto = await _repository.Table
+                                                    .Include(p => p.UnidadeMedida)
+                                                    .FirstOrDefaultAsync(p => p.Id == pedidoItem.ProdutoId);
+
+                if (produto == null)
+                {
+                    _notifiable.AddNotification("Falha ao buscar produto do pedido");
+                }
+                else
+                {
+                    decimal quantidadeVenda = pedidoItem.Quantidade;
+
+                    if (pedidoItem.UnidadeMedidaId != produto.UnidadeMedidaId)
+                    {
+                        var conversao = await _unidadeMedidaConversaoRepository.Table.FirstOrDefaultAsync(p => p.UnidadeMedidaEntradaId == pedidoItem.UnidadeMedidaId &&
+                                                                                                               p.UnidadeMedidaSaidaId == produto.UnidadeMedidaId);
+
+                        if (conversao == null)
+                        {
+                            _notifiable.AddNotification("Falha ao buscar conversão");
+                            break;
+                        }
+
+                        quantidadeVenda = pedidoItem.Quantidade * conversao.FatorConversao;
+
+                        if(produto.Quantidade < quantidadeVenda)
+                        {
+                            _notifiable.AddNotification($"O produto {produto.Nome} não tem estoque suficiente. Estoque disponível {produto.Quantidade}{produto.UnidadeMedida.Abreviacao}");
+                            await _unitOfWork.RollBackAsync();
+                            return;
+                        }
+                    }
+
+                    produto.RemoverQuantidade(quantidadeVenda);
+
+                    _repository.Update(produto);
+                    await _unitOfWork.CommitAsync();
+                }
+            }
+
+            if (_notifiable.HasNotification)
+            {
+                await _unitOfWork.RollBackAsync();
+                return;
+            }
+
+            await _unitOfWork.CommitTransactionAsync();
+        }
+
         private void ValidarUnidadeMedidaConversao(UnidadeMedidaConversao entidade)
         {
             var erros = entidade.Validar();

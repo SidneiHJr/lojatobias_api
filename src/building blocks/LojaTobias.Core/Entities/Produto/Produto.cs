@@ -46,5 +46,10 @@ namespace LojaTobias.Core.Entities
         {
             Quantidade += quantidade;
         }
+
+        public void RemoverQuantidade(decimal quantidade)
+        {
+            Quantidade -= quantidade;
+        }
     }
 }

@@ -41,6 +41,7 @@ namespace LojaTobias.Estoque.Api.Controllers
             return PagingResponse(resultadoPaginado.NumeroPagina, resultadoPaginado.Total, resultadoPaginado.TotalPaginas, resposta);
         }
 
+        #region Pedido de Compra
 
         [HttpGet("compra/{id}")]
         [Produces("application/json")]
@@ -94,7 +95,7 @@ namespace LojaTobias.Estoque.Api.Controllers
             await _produtoService.InserirProdutosPeloPedidoAsync(id);
 
             if (!_notifiable.HasNotification)
-                await _pedidoService.FinalizarPedidoCompraAsync(id);
+                await _pedidoService.FinalizarPedidoAsync(id);
 
             return CustomResponse();
         }
@@ -107,10 +108,45 @@ namespace LojaTobias.Estoque.Api.Controllers
         [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> CancelarPedidoCompra([FromRoute] Guid id)
         {
-            await _pedidoService.CancelarPedidoCompraAsync(id);
+            await _pedidoService.CancelarPedidoAsync(id);
 
             return CustomResponse();
         }
-        
+
+        #endregion
+
+        #region Pedido de Venda
+
+        [HttpPost("venda")]
+        [Produces("application/json")]
+        [ProducesResponseType(typeof(OkModel), 200)]
+        [ProducesResponseType(typeof(BadRequestModel), 400)]
+        [ProducesResponseType(typeof(InternalServerErrorModel), 500)]
+        [Authorize(Roles = "Administrador, Colaborador")]
+        public async Task<IActionResult> InserirPedidoVenda([FromBody] PedidoVendaModel model)
+        {
+            var resultado = await _pedidoService.InserirPedidoVendaAsync(_mapper.Map<Pedido>(model));
+
+            return CustomResponse(resultado);
+
+        }
+
+        [HttpPost("venda/{id}/finalizar")]
+        [Produces("application/json")]
+        [ProducesResponseType(typeof(OkModel), 200)]
+        [ProducesResponseType(typeof(BadRequestModel), 400)]
+        [ProducesResponseType(typeof(InternalServerErrorModel), 500)]
+        [Authorize(Roles = "Administrador")]
+        public async Task<IActionResult> FinalizarPedidoVenda([FromRoute] Guid id)
+        {
+            await _produtoService.VenderPeloPedidoAsync(id);
+
+            if (!_notifiable.HasNotification)
+                await _pedidoService.FinalizarPedidoAsync(id);
+
+            return CustomResponse();
+        }
+
+        #endregion
     }
 }

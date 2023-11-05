@@ -8,5 +8,6 @@ namespace LojaTobias.Core.Interfaces
         Task<UnidadeMedida?> BuscarUnidadeMedidaPorNomeOuAbreviacao(string nome, string abreviacao);
         Task<Guid> InserirUnidadeMedidaConversao(UnidadeMedidaConversao entidade);
         Task InserirProdutosPeloPedidoAsync(Guid pedidoId);
+        Task VenderPeloPedidoAsync(Guid pedidoId);
     }
 }

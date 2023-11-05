@@ -6,8 +6,10 @@ namespace LojaTobias.Core.Interfaces
     {
         Task<IQueryable<Pedido>> FiltrarAsync(string? termo, string tipo, string? status, string? colunaOrdem, string direcaoOrdem);
         Task<Pedido> BuscarPedidoAsync(Guid id);
+        Task FinalizarPedidoAsync(Guid id);
+        Task CancelarPedidoAsync(Guid id);
+
         Task<Guid> InserirPedidoCompraAsync(Pedido pedido);
-        Task FinalizarPedidoCompraAsync(Guid id);
-        Task CancelarPedidoCompraAsync(Guid id);
+        Task<Guid> InserirPedidoVendaAsync(Pedido pedido);
     }
 }
