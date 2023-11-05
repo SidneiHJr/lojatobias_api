@@ -29,6 +29,14 @@ namespace LojaTobias.Core.Entities
 
         public virtual ICollection<PedidoItem> Produtos { get; private set; }
 
+        public void Atualizar(Pedido pedido)
+        {
+            Observacao = pedido.Observacao;
+            Fornecedor = pedido.Fornecedor;
+            Cliente = pedido.Cliente;
+            Produtos = pedido.Produtos;
+        }
+
         public IEnumerable<string> Validar()
         {
             var erros = new List<string>();

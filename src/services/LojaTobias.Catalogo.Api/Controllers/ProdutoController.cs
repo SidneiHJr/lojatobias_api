@@ -25,6 +25,7 @@ namespace LojaTobias.Catalogo.Api.Controllers
         }
 
         [HttpPost("filtro")]
+        [Produces("application/json")]
         [ProducesResponseType(typeof(IEnumerable<ProdutoResponseModel>), 200)]
         [ProducesResponseType(typeof(BadRequestModel), 400)]
         [ProducesResponseType(typeof(InternalServerErrorModel), 500)]

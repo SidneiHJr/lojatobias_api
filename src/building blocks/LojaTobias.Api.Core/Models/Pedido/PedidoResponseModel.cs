@@ -8,6 +8,7 @@
         public decimal Total { get; set; }
         public string? Fornecedor { get; set; }
         public string? Cliente { get; set; }
+        public string Status { get; set; }
 
         public IEnumerable<PedidoItemResponseModel> Produtos { get; set; }
     }

@@ -16,6 +16,7 @@ namespace LojaTobias.Estoque.Api.Configuration
             services.AddScoped<IProdutoService, ProdutoService>();
 
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+            services.AddScoped<IPedidoRepository, PedidoRepository>();
 
             services.AddScoped<ILogProvider, LogProvider>();
 

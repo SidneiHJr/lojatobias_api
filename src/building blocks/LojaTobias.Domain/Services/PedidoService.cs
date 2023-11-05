@@ -1,6 +1,7 @@
 ﻿using LojaTobias.Core.Entities;
 using LojaTobias.Core.Enums;
 using LojaTobias.Core.Interfaces;
+using LojaTobias.Domain.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace LojaTobias.Domain.Services
@@ -9,8 +10,9 @@ namespace LojaTobias.Domain.Services
     {
         private readonly IRepository<Produto> _produtoRepository;
         private readonly IRepository<UnidadeMedidaConversao> _unidadeMedidaConversaoRepository;
+        private readonly IPedidoRepository _pedidoRepository;
         public PedidoService(
-            IRepository<Pedido> repository,
+            IPedidoRepository repository,
             INotifiable notifiable,
             IUnitOfWork unitOfWork,
             IAspnetUser aspnetUser,
@@ -19,6 +21,69 @@ namespace LojaTobias.Domain.Services
         {
             _produtoRepository = produtoRepository;
             _unidadeMedidaConversaoRepository = unidadeMedidaConversaoRepository;
+            _pedidoRepository = repository;
+        }
+
+        public override async Task UpdateAsync(Guid id, Pedido entity)
+        {
+            await Validate(entity);
+
+            if (_notifiable.HasNotification)
+                return;
+
+            var pedido = await _repository.GetAsync(id);
+
+            if(pedido == null)
+            {
+                _notifiable.AddNotification("Falha ao buscar pedido");
+                return;
+            }
+
+            pedido.Atualizar(entity);
+
+            pedido.NovaAtualizacao(_aspnetUser.GetUserId());
+
+            _pedidoRepository.UpdateMany(pedido);
+            await _unitOfWork.CommitAsync();
+        }
+
+        public async Task<IQueryable<Pedido>> FiltrarAsync(string? termo, string? tipo, string? status, string? colunaOrdem, string direcaoOrdem)
+        {
+            var resultado = _repository.Table
+                                            .Include(p => p.Produtos)
+                                            .Where(p => string.IsNullOrEmpty(termo) ||
+                                                        !string.IsNullOrEmpty(p.Observacao) && p.Observacao.ToUpper().Contains(termo.ToUpper()) ||
+                                                        !string.IsNullOrEmpty(p.Fornecedor) && p.Fornecedor.ToUpper().Contains(termo.ToUpper()) ||
+                                                        !string.IsNullOrEmpty(p.Cliente) && p.Cliente.ToUpper().Contains(termo.ToUpper()))
+                                            .AsNoTracking();
+
+            if (!string.IsNullOrEmpty(tipo))
+            {
+                resultado = resultado.Where(p => p.Tipo.ToUpper() == tipo.ToUpper());
+            }
+
+            if(!string.IsNullOrEmpty(status))
+            {
+                resultado = resultado.Where(p => p.Status.ToUpper() == status.ToUpper());   
+            }
+
+            if (!string.IsNullOrEmpty(colunaOrdem))
+            {
+                resultado = resultado.OrderBy(colunaOrdem, direcaoOrdem);
+            }
+            else
+                resultado = resultado.OrderByProp(p => p.DataCriacao.Value, direcaoOrdem);
+
+            return await Task.FromResult(resultado);
+
+        }
+        public async Task<Pedido> BuscarPedidoAsync(Guid id)
+        {
+            var resultado = await _pedidoRepository.Table
+                                                        .Include(p => p.Produtos)
+                                                        .FirstOrDefaultAsync(p => p.Id == id);
+
+            return resultado;
         }
 
         public async Task<Guid> InserirPedidoCompraAsync(Pedido pedido)
@@ -95,5 +160,22 @@ namespace LojaTobias.Domain.Services
             _repository.Update(pedido);
             await _unitOfWork.CommitAsync();
         }
+
+        public async Task CancelarPedidoCompraAsync(Guid id)
+        {
+            var pedido = await _repository.GetAsync(id);
+
+            if (pedido == null)
+            {
+                _notifiable.AddNotification("Falha ao buscar pedido");
+                return;
+            }
+
+            pedido.AtualizarStatus(StatusPedidoEnum.Cancelado.ToString());
+
+            _repository.Update(pedido);
+            await _unitOfWork.CommitAsync();
+        }
+
     }
 }

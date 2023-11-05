@@ -3,7 +3,8 @@
     public enum StatusPedidoEnum
     {
         Realizado,
-        Finalizado
+        Finalizado,
+        Cancelado
     }
 
 }

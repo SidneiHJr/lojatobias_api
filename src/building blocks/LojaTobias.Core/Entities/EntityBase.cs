@@ -44,33 +44,33 @@ namespace LojaTobias.Core.Entities
         {
             return $"{GetType().Name} [Id={Id}]";
         }
+    }
 
-        public class EntityComparer<T> : IEqualityComparer<T> where T : EntityBase
+    public class EntityComparer<T> : IEqualityComparer<T> where T : EntityBase
+    {
+        public bool Equals(T x, T y)
         {
-            public bool Equals(T x, T y)
-            {
-                return x.Id == y.Id;
-            }
-
-            public int GetHashCode(T obj)
-            {
-                int hCode = obj.Id.GetHashCode();
-                return hCode;
-            }
+            return x.Id == y.Id;
         }
 
-        public class EntityBaseEqualityComparer : IEqualityComparer<EntityBase>
+        public int GetHashCode(T obj)
         {
-            public bool Equals(EntityBase x, EntityBase y)
-            {
-                return x.GetType() == y.GetType() && x.Id == y.Id;
-            }
+            int hCode = obj.Id.GetHashCode();
+            return hCode;
+        }
+    }
 
-            public int GetHashCode(EntityBase obj)
-            {
-                int hCode = obj.GetType().GUID.GetHashCode();
-                return hCode.GetHashCode();
-            }
+    public class EntityBaseEqualityComparer : IEqualityComparer<EntityBase>
+    {
+        public bool Equals(EntityBase x, EntityBase y)
+        {
+            return x.GetType() == y.GetType() && x.Id == y.Id;
+        }
+
+        public int GetHashCode(EntityBase obj)
+        {
+            int hCode = obj.GetType().GUID.GetHashCode();
+            return hCode.GetHashCode();
         }
     }
 }
