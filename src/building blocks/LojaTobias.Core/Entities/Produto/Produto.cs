@@ -11,10 +11,11 @@ namespace LojaTobias.Core.Entities
 
         }
 
-        public Produto(string nome, string descricao, Guid unidadeMedidaId)
+        public Produto(string nome, string descricao, decimal preco, Guid unidadeMedidaId)
         {
             Nome = nome;
             Descricao = descricao;
+            Preco = preco;
             UnidadeMedidaId = unidadeMedidaId;
             Ativo = true;
             Removido = false;
@@ -23,6 +24,7 @@ namespace LojaTobias.Core.Entities
         public string Nome { get; private set; }
         public string? Descricao { get; private set; }
         public decimal Quantidade { get; private set; }
+        public decimal Preco { get; private set; }
         public bool Ativo { get; private set; }
         public bool Removido { get; private set; }
         
@@ -36,6 +38,7 @@ namespace LojaTobias.Core.Entities
         public void Atualizar(Produto produto)
         {
             Nome = produto.Nome;
+            Preco = produto.Preco;
             Ativo = produto.Ativo;
         }
 

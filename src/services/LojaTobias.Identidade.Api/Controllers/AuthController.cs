@@ -4,7 +4,6 @@ using LojaTobias.Api.Core.Models;
 using LojaTobias.Core.Enums;
 using LojaTobias.Core.Interfaces;
 using LojaTobias.Infra.Extensions;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -86,7 +85,7 @@ namespace LojaTobias.Identidade.Api.Controllers
         [ProducesResponseType(typeof(OkModel), 200)]
         [ProducesResponseType(typeof(BadRequestModel), 400)]
         [ProducesResponseType(typeof(InternalServerErrorModel), 500)]
-        [Authorize(Roles = "Administrador")]
+        //[Authorize(Roles = "Administrador")] // Foi retirado apenas para ser possível cadastrar sem nenhum usuário.
         public async Task<IActionResult> Cadastro([FromBody] UsuarioRegistroModel model)
         {
             if (!ModelState.IsValid) return CustomResponse(ModelState);
