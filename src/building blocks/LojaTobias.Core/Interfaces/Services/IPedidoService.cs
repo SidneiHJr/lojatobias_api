@@ -8,6 +8,7 @@ namespace LojaTobias.Core.Interfaces
         Task<Pedido> BuscarPedidoAsync(Guid id);
         Task FinalizarPedidoAsync(Guid id);
         Task CancelarPedidoAsync(Guid id);
+        Task InserirMovimentacoesAsync(string tipo, Guid pedidoId);
 
         Task<Guid> InserirPedidoCompraAsync(Pedido pedido);
         Task<Guid> InserirPedidoVendaAsync(Pedido pedido);

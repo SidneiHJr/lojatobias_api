@@ -10,18 +10,25 @@ namespace LojaTobias.Domain.Services
     {
         private readonly IRepository<Produto> _produtoRepository;
         private readonly IRepository<UnidadeMedidaConversao> _unidadeMedidaConversaoRepository;
+        private readonly IRepository<Caixa> _caixaRepository;
+        private readonly IRepository<Movimentacao> _movimentacaoRepository;
         private readonly IPedidoRepository _pedidoRepository;
+
         public PedidoService(
             IPedidoRepository repository,
             INotifiable notifiable,
             IUnitOfWork unitOfWork,
             IAspnetUser aspnetUser,
             IRepository<Produto> produtoRepository,
-            IRepository<UnidadeMedidaConversao> unidadeMedidaConversaoRepository) : base(repository, notifiable, unitOfWork, aspnetUser)
+            IRepository<UnidadeMedidaConversao> unidadeMedidaConversaoRepository,
+            IRepository<Caixa> caixaRepository,
+            IRepository<Movimentacao> movimentacaoRepository) : base(repository, notifiable, unitOfWork, aspnetUser)
         {
             _produtoRepository = produtoRepository;
             _unidadeMedidaConversaoRepository = unidadeMedidaConversaoRepository;
             _pedidoRepository = repository;
+            _caixaRepository = caixaRepository;
+            _movimentacaoRepository = movimentacaoRepository;
         }
 
         public override async Task UpdateAsync(Guid id, Pedido entity)
@@ -120,10 +127,69 @@ namespace LojaTobias.Domain.Services
             await _unitOfWork.CommitAsync();
         }
 
+        public async Task InserirMovimentacoesAsync(string tipo, Guid pedidoId)
+        {
+            var pedido = await _repository.Table
+                                            .Include(p => p.Produtos)
+                                            .AsNoTracking()
+                                            .FirstOrDefaultAsync(p => p.Id == pedidoId);
+
+            _unitOfWork.BeginTransaction();
+
+            foreach(var pedidoItem in pedido.Produtos)
+            {
+                decimal quantidade = pedidoItem.Quantidade;
+
+                var produto = await _produtoRepository.Table
+                                                        .AsNoTracking()
+                                                        .FirstOrDefaultAsync(p => p.Id == pedidoItem.ProdutoId);
+
+                if (pedidoItem.UnidadeMedidaId != produto.UnidadeMedidaId)
+                {
+                    var conversao = await _unidadeMedidaConversaoRepository.Table.FirstOrDefaultAsync(p => p.UnidadeMedidaEntradaId == pedidoItem.UnidadeMedidaId &&
+                                                                                                           p.UnidadeMedidaSaidaId == produto.UnidadeMedidaId);
+
+                    quantidade = pedidoItem.Quantidade * conversao.FatorConversao;
+                }
+
+                var movimentacao = new Movimentacao(CategoriaMovimentacaoEnum.Estoque.ToString(), tipo);
+
+                movimentacao.NovaMovimentacaoEstoque(pedido.Id, null, produto.Id, quantidade);
+
+                ValidarMovimentacao(movimentacao);
+
+                if (_notifiable.HasNotification)
+                    return;
+
+                movimentacao.NovaInsercao(string.IsNullOrEmpty(movimentacao.UsuarioCriacao) ? _aspnetUser.GetUserId() : movimentacao.UsuarioCriacao);
+
+                await _movimentacaoRepository.InsertAsync(movimentacao);
+                var sucesso = await _unitOfWork.CommitAsync();
+
+                if (!sucesso)
+                {
+                    _notifiable.AddNotification("Inserir", "Erro ao inserir o registro");
+                    await _unitOfWork.RollBackAsync();
+                    return;
+                }
+            }
+
+            await _unitOfWork.CommitTransactionAsync();
+
+        }
+
         #region Pedido de Compra
 
         public async Task<Guid> InserirPedidoCompraAsync(Pedido pedido)
         {
+            var caixa = await _caixaRepository.Table.FirstOrDefaultAsync();
+
+            if (caixa == null)
+            {
+                _notifiable.AddNotification("Nenhum caixa froi criado.");
+                return Guid.Empty;
+            }
+
             pedido.NovoPedido(TipoPedidoEnum.Compra.ToString());
 
             decimal totalPedido = 0;
@@ -156,6 +222,12 @@ namespace LojaTobias.Domain.Services
                 }
 
                 totalPedido += pedidoItem.Valor;
+            }
+
+            if(caixa.Saldo < totalPedido)
+            {
+                _notifiable.AddNotification("O saldo do caixa não é suficiente para realizar o pedido de compra");
+                return Guid.Empty;
             }
 
             pedido.AtualizarTotal(totalPedido);
@@ -225,5 +297,11 @@ namespace LojaTobias.Domain.Services
         }
 
         #endregion
+
+        private void ValidarMovimentacao(Movimentacao movimentacao)
+        {
+            var erros = movimentacao.Validar();
+            _notifiable.AddNotifications(erros);
+        }
     }
 }

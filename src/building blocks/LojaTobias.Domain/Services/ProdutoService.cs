@@ -11,6 +11,7 @@ namespace LojaTobias.Domain.Services
         private readonly IRepository<UnidadeMedida> _unidadeMedidaRepository;
         private readonly IRepository<UnidadeMedidaConversao> _unidadeMedidaConversaoRepository;
         private readonly IRepository<Pedido> _pedidoRepository;
+        private readonly IRepository<Ajuste> _ajusteRepository;
         public ProdutoService(
             IRepository<Produto> repository,
             INotifiable notifiable,
@@ -18,11 +19,13 @@ namespace LojaTobias.Domain.Services
             IAspnetUser aspnetUser,
             IRepository<UnidadeMedida> unidadeMedidaRepository,
             IRepository<UnidadeMedidaConversao> unidadeMedidaConversaoRepository,
-            IRepository<Pedido> pedidoRepository) : base(repository, notifiable, unitOfWork, aspnetUser)
+            IRepository<Pedido> pedidoRepository,
+            IRepository<Ajuste> ajusteRepository) : base(repository, notifiable, unitOfWork, aspnetUser)
         {
             _unidadeMedidaRepository = unidadeMedidaRepository;
             _unidadeMedidaConversaoRepository = unidadeMedidaConversaoRepository;
             _pedidoRepository = pedidoRepository;
+            _ajusteRepository = ajusteRepository;
         }
 
         public async Task<IQueryable<Produto>> FiltrarAsync(string? termo, string? colunaOrdem, string direcaoOrdem)
@@ -94,7 +97,7 @@ namespace LojaTobias.Domain.Services
             return entidade.Id;
         }
 
-        public async Task InserirProdutosPeloPedidoAsync(Guid pedidoId)
+        public async Task AdicionarEstoquePeloPedidoAsync(Guid pedidoId)
         {
             var pedido = await _pedidoRepository.Table
                                                     .Include(p => p.Produtos)
@@ -133,23 +136,19 @@ namespace LojaTobias.Domain.Services
                 }
                 else
                 {
-                    decimal quantidadeAdicionar = 0;
+                    decimal quantidadeAdicionar = pedidoItem.Quantidade;
 
                     if (pedidoItem.UnidadeMedidaId != produto.UnidadeMedidaId)
                     {
-                        var conversao = await _unidadeMedidaConversaoRepository.Table.FirstOrDefaultAsync(p => p.UnidadeMedidaEntradaId == pedidoItem.UnidadeMedidaId &&
-                                                                                                               p.UnidadeMedidaSaidaId == produto.UnidadeMedidaId);
 
-                        if (conversao == null)
+                        quantidadeAdicionar = await CalcularConversao(pedidoItem.Quantidade, pedidoItem.UnidadeMedidaId, produto.UnidadeMedidaId);
+
+                        if (_notifiable.HasNotification)
                         {
-                            _notifiable.AddNotification("Falha ao buscar conversão");
-                            break;
+                            await _unitOfWork.RollBackAsync();
+                            return;
                         }
-
-                        quantidadeAdicionar = pedidoItem.Quantidade * conversao.FatorConversao;
                     }
-                    else
-                        quantidadeAdicionar = pedidoItem.Quantidade;
 
                     produto.AdicionarQuantidade(quantidadeAdicionar);
 
@@ -167,7 +166,33 @@ namespace LojaTobias.Domain.Services
             await _unitOfWork.CommitTransactionAsync();
         }
 
-        public async Task VenderPeloPedidoAsync(Guid pedidoId)
+        public async Task AdicionarEstoquePeloAjusteAsync(Guid ajusteId)
+        {
+            var ajuste = await _ajusteRepository.Table
+                                                    .AsNoTracking()
+                                                    .FirstOrDefaultAsync(p => p.Id == ajusteId);
+
+            var produto = await _repository.Table
+                                                .FirstOrDefaultAsync(p => p.Id == ajuste.ProdutoId);
+
+            decimal quantidadeAdicionar = ajuste.Quantidade;
+
+            if (ajuste.UnidadeMedidaId != produto.UnidadeMedidaId)
+            {
+
+                quantidadeAdicionar = await CalcularConversao(ajuste.Quantidade, ajuste.UnidadeMedidaId, produto.UnidadeMedidaId);
+
+                if (_notifiable.HasNotification)
+                    return;
+            }
+
+            produto.AdicionarQuantidade(quantidadeAdicionar);
+
+            _repository.Update(produto);
+            await _unitOfWork.CommitAsync();
+        }
+
+        public async Task RemoverEstoquePeloPedidoAsync(Guid pedidoId)
         {
             var pedido = await _pedidoRepository.Table
                                                     .Include(p => p.Produtos)
@@ -203,37 +228,36 @@ namespace LojaTobias.Domain.Services
                 if (produto == null)
                 {
                     _notifiable.AddNotification("Falha ao buscar produto do pedido");
+                    await _unitOfWork.RollBackAsync();
+                    return;
                 }
-                else
+
+                decimal quantidadeVenda = pedidoItem.Quantidade;
+
+                if (pedidoItem.UnidadeMedidaId != produto.UnidadeMedidaId)
                 {
-                    decimal quantidadeVenda = pedidoItem.Quantidade;
 
-                    if (pedidoItem.UnidadeMedidaId != produto.UnidadeMedidaId)
+                    quantidadeVenda = await CalcularConversao(pedidoItem.Quantidade, pedidoItem.UnidadeMedidaId, produto.UnidadeMedidaId);
+
+                    if (_notifiable.HasNotification)
                     {
-                        var conversao = await _unidadeMedidaConversaoRepository.Table.FirstOrDefaultAsync(p => p.UnidadeMedidaEntradaId == pedidoItem.UnidadeMedidaId &&
-                                                                                                               p.UnidadeMedidaSaidaId == produto.UnidadeMedidaId);
-
-                        if (conversao == null)
-                        {
-                            _notifiable.AddNotification("Falha ao buscar conversão");
-                            break;
-                        }
-
-                        quantidadeVenda = pedidoItem.Quantidade * conversao.FatorConversao;
-
-                        if(produto.Quantidade < quantidadeVenda)
-                        {
-                            _notifiable.AddNotification($"O produto {produto.Nome} não tem estoque suficiente. Estoque disponível {produto.Quantidade}{produto.UnidadeMedida.Abreviacao}");
-                            await _unitOfWork.RollBackAsync();
-                            return;
-                        }
+                        await _unitOfWork.RollBackAsync();
+                        return;
                     }
-
-                    produto.RemoverQuantidade(quantidadeVenda);
-
-                    _repository.Update(produto);
-                    await _unitOfWork.CommitAsync();
                 }
+
+                if (produto.Quantidade < quantidadeVenda)
+                {
+                    _notifiable.AddNotification($"O produto {produto.Nome} não tem estoque suficiente. Estoque disponível {produto.Quantidade}{produto.UnidadeMedida.Abreviacao}");
+                    await _unitOfWork.RollBackAsync();
+                    return;
+                }
+
+                produto.RemoverQuantidade(quantidadeVenda);
+
+                _repository.Update(produto);
+                await _unitOfWork.CommitAsync();
+                
             }
 
             if (_notifiable.HasNotification)
@@ -245,12 +269,61 @@ namespace LojaTobias.Domain.Services
             await _unitOfWork.CommitTransactionAsync();
         }
 
+        public async Task RemoverEstoquePeloAjusteAsync(Guid ajusteId)
+        {
+            var ajuste = await _ajusteRepository.Table
+                                                    .AsNoTracking()
+                                                    .FirstOrDefaultAsync(p => p.Id == ajusteId);
+
+            var produto = await _repository.Table
+                                                .FirstOrDefaultAsync(p => p.Id == ajuste.ProdutoId);
+
+            decimal quantidadeAjuste = ajuste.Quantidade;
+
+            if (ajuste.UnidadeMedidaId != produto.UnidadeMedidaId)
+            {
+
+                quantidadeAjuste = await CalcularConversao(ajuste.Quantidade, ajuste.UnidadeMedidaId, produto.UnidadeMedidaId);
+
+                if (_notifiable.HasNotification)
+                    return;
+            }
+
+            if (produto.Quantidade < quantidadeAjuste)
+            {
+                _notifiable.AddNotification($"O produto {produto.Nome} não tem estoque suficiente. Estoque disponível {produto.Quantidade}{produto.UnidadeMedida.Abreviacao}");
+                await _unitOfWork.RollBackAsync();
+                return;
+            }
+
+            produto.RemoverQuantidade(quantidadeAjuste);
+
+            _repository.Update(produto);
+            await _unitOfWork.CommitAsync();
+        }
+
         private void ValidarUnidadeMedidaConversao(UnidadeMedidaConversao entidade)
         {
             var erros = entidade.Validar();
-            _notifiable.AddNotifications(erros as IEnumerable<string>);
+            _notifiable.AddNotifications(erros);
         }
 
-        
+        private async Task<decimal> CalcularConversao(decimal quantidade, Guid unidadeMedidaEntradaId, Guid unidadeMedidaSaidaId)
+        {
+            decimal quantidadeConvertida = 0;
+
+            var conversao = await _unidadeMedidaConversaoRepository.Table.FirstOrDefaultAsync(p => p.UnidadeMedidaEntradaId == unidadeMedidaEntradaId &&
+                                                                                                   p.UnidadeMedidaSaidaId == unidadeMedidaSaidaId);
+
+            if (conversao == null)
+            {
+                _notifiable.AddNotification("Não existe conversão para unidade de medida informada");
+                return 0;
+            }
+
+            quantidadeConvertida = quantidade * conversao.FatorConversao;
+
+            return quantidadeConvertida;
+        }
     }
 }

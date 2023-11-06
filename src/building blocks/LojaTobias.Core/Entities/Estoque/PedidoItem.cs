@@ -1,7 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
-
-namespace LojaTobias.Core.Entities
+﻿namespace LojaTobias.Core.Entities
 {
     public class PedidoItem: EntityBase
     {

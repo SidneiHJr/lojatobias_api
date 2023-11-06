@@ -28,6 +28,7 @@ namespace LojaTobias.Core.Entities
         public string Status { get; private set; }
 
         public virtual ICollection<PedidoItem> Produtos { get; private set; }
+        public virtual ICollection<Movimentacao> Movimentacoes { get; private set; }
 
         public void Atualizar(Pedido pedido)
         {

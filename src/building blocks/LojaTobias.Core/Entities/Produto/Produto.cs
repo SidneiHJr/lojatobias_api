@@ -30,6 +30,8 @@ namespace LojaTobias.Core.Entities
         public virtual UnidadeMedida UnidadeMedida { get; private set; }
 
         public virtual ICollection<PedidoItem> Pedidos { get; private set; }
+        public virtual ICollection<Movimentacao> Movimentacoes { get; private set; }
+        public virtual ICollection<Ajuste> Ajustes { get; private set; }
 
         public void Atualizar(Produto produto)
         {

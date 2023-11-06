@@ -7,7 +7,9 @@ namespace LojaTobias.Core.Interfaces
         Task<IQueryable<Produto>> FiltrarAsync(string? termo, string? colunaOrdem, string direcaoOrdem);
         Task<UnidadeMedida?> BuscarUnidadeMedidaPorNomeOuAbreviacao(string nome, string abreviacao);
         Task<Guid> InserirUnidadeMedidaConversao(UnidadeMedidaConversao entidade);
-        Task InserirProdutosPeloPedidoAsync(Guid pedidoId);
-        Task VenderPeloPedidoAsync(Guid pedidoId);
+        Task AdicionarEstoquePeloPedidoAsync(Guid pedidoId);
+        Task AdicionarEstoquePeloAjusteAsync(Guid ajusteId);
+        Task RemoverEstoquePeloPedidoAsync(Guid pedidoId);
+        Task RemoverEstoquePeloAjusteAsync(Guid ajusteId);
     }
 }
