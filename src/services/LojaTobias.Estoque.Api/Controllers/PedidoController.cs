@@ -112,13 +112,14 @@ namespace LojaTobias.Estoque.Api.Controllers
             if (_notifiable.HasNotification)
                 return CustomResponse();
 
-            await _pedidoService.FinalizarPedidoAsync(id);
+            await _pedidoService.InserirMovimentacoesAsync(TipoMovimentacaoEnum.Debito.ToString(), id);
+            await _caixaService.InserirMovimentacaoAsync(TipoMovimentacaoEnum.Debito.ToString(), id);
 
             if (_notifiable.HasNotification)
                 return CustomResponse();
 
-            await _pedidoService.InserirMovimentacoesAsync(TipoMovimentacaoEnum.Debito.ToString(), id);
-            await _caixaService.InserirMovimentacaoAsync(TipoMovimentacaoEnum.Debito.ToString(), id);
+            await _pedidoService.FinalizarPedidoAsync(id);
+
 
             return CustomResponse();
         }
@@ -167,13 +168,13 @@ namespace LojaTobias.Estoque.Api.Controllers
             if (_notifiable.HasNotification)
                 return CustomResponse();
 
-            await _pedidoService.FinalizarPedidoAsync(id);
+            await _pedidoService.InserirMovimentacoesAsync(TipoMovimentacaoEnum.Credito.ToString(), id);
+            await _caixaService.InserirMovimentacaoAsync(TipoMovimentacaoEnum.Credito.ToString(), id);
 
             if (_notifiable.HasNotification)
                 return CustomResponse();
 
-            await _pedidoService.InserirMovimentacoesAsync(TipoMovimentacaoEnum.Credito.ToString(), id);
-            await _caixaService.InserirMovimentacaoAsync(TipoMovimentacaoEnum.Credito.ToString(), id);
+            await _pedidoService.FinalizarPedidoAsync(id);
 
             return CustomResponse();
         }

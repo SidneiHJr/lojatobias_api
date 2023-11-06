@@ -12,8 +12,8 @@ namespace LojaTobias.Financeiro.Api.Configuration
             {
                 c.SwaggerDoc("v1", new OpenApiInfo()
                 {
-                    Title = "LojaTobias Api Estoque",
-                    Description = "Api para controle de estoque. Gerar pedidos de compra e venda de produtos",
+                    Title = "LojaTobias Api Financeiro",
+                    Description = "Api para controle financeiro. Criar caixa, acompanhar saldo e verificar movimentações financeiras",
                     Contact = new OpenApiContact { Name = "Sidnei", Email = "sidneihjr@gmail.com", Url = new Uri("https://www.linkedin.com/in/sidnei-hernandes-junior-217621209/") }
                 });
 

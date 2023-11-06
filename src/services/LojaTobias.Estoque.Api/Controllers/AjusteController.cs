@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace LojaTobias.Estoque.Api.Controllers
 {
+    [Route("api/ajuste")]
     public class AjusteController : MainController
     {
         private readonly IAjusteService _ajusteService;

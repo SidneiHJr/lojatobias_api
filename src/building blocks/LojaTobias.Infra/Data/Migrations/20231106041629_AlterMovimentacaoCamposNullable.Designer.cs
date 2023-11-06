@@ -4,6 +4,7 @@ using LojaTobias.Infra.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LojaTobias.Infra.Data.Migrations
 {
     [DbContext(typeof(Context))]
-    partial class ContextModelSnapshot : ModelSnapshot
+    [Migration("20231106041629_AlterMovimentacaoCamposNullable")]
+    partial class AlterMovimentacaoCamposNullable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -41,6 +44,9 @@ namespace LojaTobias.Infra.Data.Migrations
                         .HasMaxLength(1000)
                         .HasColumnType("varchar");
 
+                    b.Property<Guid>("MovimentacaoId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid>("ProdutoId")
                         .HasColumnType("uniqueidentifier");
 
@@ -64,6 +70,9 @@ namespace LojaTobias.Infra.Data.Migrations
                         .HasColumnType("varchar");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("MovimentacaoId")
+                        .IsUnique();
 
                     b.HasIndex("ProdutoId");
 
@@ -197,8 +206,6 @@ namespace LojaTobias.Infra.Data.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("AjusteId");
 
                     b.HasIndex("CaixaId");
 
@@ -690,6 +697,12 @@ namespace LojaTobias.Infra.Data.Migrations
 
             modelBuilder.Entity("LojaTobias.Core.Entities.Ajuste", b =>
                 {
+                    b.HasOne("LojaTobias.Core.Entities.Movimentacao", "Movimentacao")
+                        .WithOne("Ajuste")
+                        .HasForeignKey("LojaTobias.Core.Entities.Ajuste", "MovimentacaoId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("LojaTobias.Core.Entities.Produto", "Produto")
                         .WithMany("Ajustes")
                         .HasForeignKey("ProdutoId")
@@ -702,6 +715,8 @@ namespace LojaTobias.Infra.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("Movimentacao");
+
                     b.Navigation("Produto");
 
                     b.Navigation("UnidadeMedida");
@@ -709,10 +724,6 @@ namespace LojaTobias.Infra.Data.Migrations
 
             modelBuilder.Entity("LojaTobias.Core.Entities.Movimentacao", b =>
                 {
-                    b.HasOne("LojaTobias.Core.Entities.Ajuste", "Ajuste")
-                        .WithMany()
-                        .HasForeignKey("AjusteId");
-
                     b.HasOne("LojaTobias.Core.Entities.Caixa", "Caixa")
                         .WithMany("Movimentacoes")
                         .HasForeignKey("CaixaId")
@@ -727,8 +738,6 @@ namespace LojaTobias.Infra.Data.Migrations
                         .WithMany("Movimentacoes")
                         .HasForeignKey("ProdutoId")
                         .OnDelete(DeleteBehavior.Restrict);
-
-                    b.Navigation("Ajuste");
 
                     b.Navigation("Caixa");
 
@@ -873,6 +882,11 @@ namespace LojaTobias.Infra.Data.Migrations
             modelBuilder.Entity("LojaTobias.Core.Entities.Caixa", b =>
                 {
                     b.Navigation("Movimentacoes");
+                });
+
+            modelBuilder.Entity("LojaTobias.Core.Entities.Movimentacao", b =>
+                {
+                    b.Navigation("Ajuste");
                 });
 
             modelBuilder.Entity("LojaTobias.Core.Entities.Pedido", b =>

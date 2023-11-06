@@ -66,6 +66,8 @@ namespace LojaTobias.Infra.Mappings
                 .HasColumnType("varchar")
                 .HasMaxLength(1000);
 
+            builder.HasOne(p => p.Ajuste);
+
             builder.HasOne(p => p.Caixa)
                 .WithMany(x => x.Movimentacoes)
                 .HasForeignKey(p => p.CaixaId)
@@ -81,10 +83,6 @@ namespace LojaTobias.Infra.Mappings
                 .HasForeignKey(p => p.PedidoId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasOne(p => p.Ajuste)
-                .WithOne(x => x.Movimentacao)
-                .HasForeignKey<Ajuste>()
-                .OnDelete(DeleteBehavior.Restrict);
 
 
         }

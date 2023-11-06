@@ -21,16 +21,16 @@ namespace LojaTobias.Core.Entities
         public decimal? Quantidade { get; private set; }
 
         public Guid? CaixaId { get; private set; }
-        public virtual Caixa Caixa { get; private set; }
+        public virtual Caixa? Caixa { get; private set; }
 
         public Guid? ProdutoId { get; private set; }
-        public virtual Produto Produto { get; private set; }
+        public virtual Produto? Produto { get; private set; }
 
         public Guid? PedidoId { get; private set; }
-        public virtual Pedido Pedido { get; private set; }
+        public virtual Pedido? Pedido { get; private set; }
 
         public Guid? AjusteId { get; private set; }
-        public virtual Ajuste Ajuste { get; private set; }
+        public virtual Ajuste? Ajuste { get; private set; }
 
         public void NovaMovimentacaoEstoque(Guid? pedidoId, Guid? ajusteId, Guid produtoId, decimal quantidade)
         {

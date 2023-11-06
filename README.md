@@ -1,29 +1,76 @@
 # Introduction
 
-TODO: Give a short introduction of your project. Let this section explain the objectives or the motivation behind this project.
+Solução desenvolvida para o desafio backend proposto pela TreeInova.
+O banco utilizado no desenvolvimento foi o SqlServer.
 
 # Getting Started
+=> É necessário alterar a DefaultConnection de todas as APIs.
+=> Comece cadastrando um usuário do tipo Administrador efetuando um post no endpoint api/auth/cadastro
+    Pode utilizar o seguinte JSON
+    {
+        "nome": "Tobias Admin",
+        "email": "tobias@gmail.com",
+        "perfil": "Administrador",
+        "senha": "Teste@123",
+        "confirmacaoSenha": "Teste@123"
+    }
 
-TODO: Guide users through getting your code up and running on their own system. In this section you can talk about:
+=> Também é necessário criar um Caixa efetuando um post api/caixa. É necessário estar logado.
+    Pode utilizar o seguinte JSON
+    {
+        "saldoInicial": 50000
+    }
 
-1. Installation process
-2. Software dependencies
-3. Latest releases
-4. API references
+=> Cadastre as unidades de medidas ( mg, g, kg, t, etc) antes de cadastrar algum produto pelo post api/produto/unidade-medida
+    Segue alguns JSON
+    {
+        "nome": "Miligrama",
+        "abreviacao": "mg"
+    }
+
+    {
+        "nome": "Grama",
+        "abreviacao": "g"
+    }
+
+    {
+        "nome": "Quilograma",
+        "abreviacao": "kg"
+    }
+
+    {
+        "nome": "Tonelada",
+        "abreviacao": "t"
+    }
+
+=> É possível comprar/vender um produto com unidades de medidas diferentes. Por exemplo: 
+Tenho cadastrado Maça Gala a Granel cuja unidade medida é kg. Porém para vender apenas 200 gramas do produto, 
+posso adicionar em um pedido o produto maçã gala a granel só que com a unidade medida em gramas. Com isso é feito uma 
+conversão de gramas para kilo, assim o estoque do produto que está em kg será reduzido em 0.2kg.
+Para isso é necessário cadastrar as Unidade de Medida Conversao através do post em api/produto/unidade-medida-conversao.
+Segue um JSON
+    {
+        "unidadeMedidaEntradaId": "", //Deve ser o GUID referente a uma unidade medida cadastrada, por exemplo kg
+        "unidadeMedidaSaidaId": "", //Deve ser o GUID referente a uma unidade medida cadastrada, por exemplo g
+        "fatorConversao": 1000
+    } // Nesse caso, será criado uma conversao de kg para g onde irei multiplicar a quantidade por 1000 para ser representado em g.
+Lembrando que é necessário criar o caminho inverso também.
+
+=> Nao foi implementado um cadastro de cliente e fornecedor. Foram colocados como string apenas para uma melhor ilustracao.
 
 # Build and Test
 
-TODO: Describe and show how to build your code and run the tests.
+Para compra, é necessário criar um pedido de compra e depois finaliza-lo. Foi criado pensando no cenário de que uma compra não é realizada
+no momento, demora para chegar. 
+    Realizar pedido através de um post em api/pedido/compra
+    Finalizar o pedido através de um post em api/pedido/compra/{id}/finalizar
 
-# Contribute
 
-TODO: Explain how other users and developers can contribute to make your code better.
-
-If you want to learn more about creating good readme files then refer the following [guidelines](https://docs.microsoft.com/en-us/azure/devops/repos/git/create-a-readme?view=azure-devops). You can also seek inspiration from the below readme files:
-
-- [ASP.NET Core](https://github.com/aspnet/Home)
-- [Visual Studio Code](https://github.com/Microsoft/vscode)
-- [Chakra Core](https://github.com/Microsoft/ChakraCore)
+Para venda, é necessário criar um pedido de venda e depois finaliza-lo.
+    Realizar pedido através de um post em api/pedido/venda
+    Finalizar o pedido através de um post em api/pedido/venda/{id}/finalizar
+    
+Para ajuste na quantidade do produto, é necessário criar um ajuste.
 
 # Migrations
 

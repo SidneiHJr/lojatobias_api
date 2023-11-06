@@ -14,6 +14,9 @@ namespace LojaTobias.Estoque.Api.Configuration
 
             CreateMap<PedidoItemModel, PedidoItem>();
             CreateMap<PedidoItem, PedidoItemResponseModel>();
+
+            CreateMap<AjusteModel, Ajuste>();
+            CreateMap<Ajuste, AjusteResponseModel>();
         }
     }
 }

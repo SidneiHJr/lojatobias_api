@@ -19,9 +19,6 @@ namespace LojaTobias.Core.Entities
         public Guid ProdutoId { get; private set; }
         public virtual Produto Produto { get; private set; }
 
-        public Guid MovimentacaoId { get; private set; }
-        public virtual Movimentacao Movimentacao { get; private set; }
-
         public IEnumerable<string> Validar()
         {
             var erros = new List<string>();

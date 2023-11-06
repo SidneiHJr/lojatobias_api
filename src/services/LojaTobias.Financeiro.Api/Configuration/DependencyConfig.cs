@@ -12,6 +12,7 @@ namespace LojaTobias.Financeiro.Api.Configuration
         public static IServiceCollection AddDependencyConfig(this IServiceCollection services)
         {
             services.AddScoped(typeof(IService<>), typeof(Service<>));
+            services.AddScoped<ICaixaService, CaixaService>();
 
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
